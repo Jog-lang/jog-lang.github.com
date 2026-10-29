@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modules — Jog</title>
+  <link rel="stylesheet" href="../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../index.html">Home</a></li>
+<li class="nav-item"><a href="../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item is-active"><a href="../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Modules</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>Modules</h1>
+<h2>Packages and modules</h2>
+<ul>
+<li>A <strong>package</strong> is one folder of <code>.jog</code> files. It is the unit of namespacing and imports. Files in the same folder share declarations without imports.</li>
+<li>A <strong>module</strong> is a project: a tree of packages with one <code>jog.mod</code> at the root. It is the unit of versioning, dependencies, and distribution.</li>
+<li>Import paths are dot-separated from the module root: <code>import net.http</code>, <code>import std.list as lists</code>. The first segment is <code>std</code>, a required module name, or a local folder. Circular imports are errors.</li>
+</ul>
+<p>The entry point is <code>fn main()</code> in the <strong>root package</strong> (the folder that contains <code>jog.mod</code>). <code>*.test.jog</code> files belong to their folder’s package and load only under <code>jog test</code>.</p>
+<h2><code>jog.mod</code></h2>
+<p>Line-based; <code>#</code> comments. Minimal:</p>
+<pre><code>module hello</code></pre>
+<p>v2 (every V1 file is valid v2):</p>
+<pre><code>module quickref
+version 0.1.0
+kind executable
+jog 0.0.1</code></pre>
+<table>
+<thead><tr>
+<th>Directive</th>
+<th>Meaning</th>
+</tr></thead><tbody>
+<tr>
+<td><code>module &lt;name&gt;</code></td>
+<td>Required, first; identifier, not <code>std</code></td>
+</tr>
+<tr>
+<td><code>version &lt;semver&gt;</code></td>
+<td>Default <code>0.0.0</code></td>
+</tr>
+<tr>
+<td><code>kind executable</code> / <code>kind library</code></td>
+<td>Default executable; libraries have no <code>main</code></td>
+</tr>
+<tr>
+<td><code>jog &lt;semver&gt;</code></td>
+<td>Minimum compiler version</td>
+</tr>
+<tr>
+<td><code>require &lt;module&gt; &lt;path-or-version&gt;</code></td>
+<td>Dependency</td>
+</tr>
+<tr>
+<td><code>export &lt;package path&gt;</code></td>
+<td>Library only; omit to export every package</td>
+</tr>
+<tr>
+<td><code>link &lt;lib&gt;</code>, <code>link.windows &lt;lib&gt;</code></td>
+<td>C libraries</td>
+</tr>
+</tbody></table>
+<p>The compiler never follows <code>require</code> paths by itself. Pass <code>--module name=dir</code> (or use <a href="tools/">JogBuild</a>) for each dependency.</p>
+<h2><code>.jogz</code></h2>
+<p>A distributed library is a <code>.jogz</code>: a zip archive with a fixed layout carrying the module source (and later, optionally, objects). JogBuild unpacks archives into a cache and points <code>jog</code> at source folders. The compiler only reads folders.</p>
+<h2>Layout sketch</h2>
+<pre><code>myapp/
+  jog.mod
+  main.jog
+  util.jog
+  main.test.jog
+  net/
+    http.jog
+  out/          # git-ignore</code></pre>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

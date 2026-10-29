@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Std — Jog</title>
+  <link rel="stylesheet" href="../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../index.html">Home</a></li>
+<li class="nav-item"><a href="../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../modules/index.html">Modules</a></li>
+<li class="nav-item is-active"><a href="../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Std</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>Std</h1>
+<p>The standard library ships with the compiler (<code>../std</code> next to the <code>jog</code> binary, or <code>$JOG_ROOT/std</code>). Import as <code>import std.&lt;package&gt;</code>; refer by last segment (<code>io.println</code>) or alias.</p>
+<h2>Conventions (V1)</h2>
+<ul>
+<li><strong>Allocation is a context.</strong> Methods that allocate declare <code>with (a: mem.Allocator)</code>. Containers do not store an allocator.</li>
+<li><strong>Out of memory</strong> in std allocators typically <strong>panics</strong> rather than returning an error.</li>
+<li>Some I/O failures use <code>(T, bool)</code> instead of <code>error?</code>.</li>
+<li>Programmer errors (bad index, pop on empty) panic.</li>
+</ul>
+<h2>Packages</h2>
+<table>
+<thead><tr>
+<th>Package</th>
+<th>Role</th>
+</tr></thead><tbody>
+<tr>
+<td><code>std.c</code></td>
+<td>C type aliases, libc / runtime bindings</td>
+</tr>
+<tr>
+<td><code>std.cmp</code></td>
+<td><code>Ordered</code>, <code>Comparable</code>, numeric type sets</td>
+</tr>
+<tr>
+<td><code>std.io</code></td>
+<td><code>print</code> / <code>println</code>, <code>eprint</code>, file <code>read_all</code> / <code>write_all</code>, <code>Logger</code></td>
+</tr>
+<tr>
+<td><code>std.mem</code></td>
+<td><code>Allocator</code>, <code>heap()</code>, error arena</td>
+</tr>
+<tr>
+<td><code>std.testing</code></td>
+<td><code>Testing</code> for <code>@test</code> (<code>expect</code>, <code>expectEq</code>, <code>expectPanic</code>, …)</td>
+</tr>
+<tr>
+<td><code>std.list</code></td>
+<td>Growable <code>List&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>std.map</code></td>
+<td><code>Map&lt;K, V&gt;</code> (caller supplies hash; <code>fnv1a</code> for <code>str</code>)</td>
+</tr>
+<tr>
+<td><code>std.strbuilder</code></td>
+<td>Growable text buffer</td>
+</tr>
+<tr>
+<td><code>std.arena</code></td>
+<td>Bump <code>Arena</code> implementing <code>Allocator</code></td>
+</tr>
+<tr>
+<td><code>std.fs</code></td>
+<td>Files, join, directory list (Windows-focused in V1)</td>
+</tr>
+<tr>
+<td><code>std.os</code></td>
+<td><code>argc</code> / <code>argv</code>, <code>env</code></td>
+</tr>
+<tr>
+<td><code>std.proc</code></td>
+<td>Run a child and capture output (Windows-focused in V1)</td>
+</tr>
+<tr>
+<td><code>std.math</code></td>
+<td><code>floor</code>, <code>ceil</code>, <code>log2</code>, <code>exp2</code> via libm</td>
+</tr>
+</tbody></table>
+<h2>Quick examples</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io
+import std.mem
+import std.list
+
+fn main() {
+    io.println(&quot;hi&quot;)
+    with (mem.heap()) {
+        var xs: list.List&lt;i64&gt;
+        xs.push(1, 2, 3)
+        defer xs.free()
+        io.println(&quot;ok&quot;)
+    }
+}</code></pre>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.testing
+
+@test
+fn smoke() with (t: testing.Testing) {
+    t.expect(2 + 2 == 4)
+    t.expectEq(&quot;a&quot;, &quot;a&quot;)
+}</code></pre>
+<p>For API detail, read the <code>.jog</code> sources under the compiler’s <code>std/</code> tree. See also <a href="language/memory/">Memory</a> and <a href="language/contexts/">Contexts</a>.</p>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

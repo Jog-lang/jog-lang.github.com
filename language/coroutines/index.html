@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coroutines — Jog</title>
+  <link rel="stylesheet" href="../../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../../index.html">Home</a></li>
+<li class="nav-item"><a href="../../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../../language/memory/index.html">Memory</a></li>
+<li class="nav-item is-active"><a href="../../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Coroutines</h1>
+        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+      </header>
+      <article class="wiki-content">
+        <h1>Coroutines</h1>
+<p><strong>Status:</strong> works in V1</p>
+<p>Stackful coroutines with structured concurrency. V1 runs on one OS thread and switches at <code>send</code>, <code>recv</code>, <code>sleep</code>, and <code>yield</code>.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
+
+fn answer(): i64 {
+    var v: i64 = 0
+    scope {
+        val task = go with (mem.heap()) { 40 + 2 }
+        v = task.join()
+    }
+    return v
+}
+
+fn channelSum(): i64 {
+    var total: i64 = 0
+    scope {
+        val ch = Chan&lt;i64&gt;.init(4) with (mem.heap())
+        go with (mem.heap()) {
+            ch.send(1)
+            ch.send(2)
+            ch.close()
+        }
+        for v in ch {
+            total += v
+        }
+    }
+    return total
+}
+
+fn firstReady(): i64 {
+    var got: i64 = 0
+    scope {
+        val ch = Chan&lt;i64&gt;.init(0) with (mem.heap())
+        go with (mem.heap()) { ch.send(7) }
+        select {
+            recv(ch) { v -&gt; got = v }
+        }
+    }
+    return got
+}</code></pre>
+<ul>
+<li><code>go</code> needs a <code>Scope</code> (from <code>scope { }</code>) and an <code>Allocator</code> for the coroutine stack.</li>
+<li><code>scope</code> returns after every child finishes.</li>
+<li>Inside <code>main</code>, <code>go { ... }</code> can omit <code>with</code> because of default contexts; elsewhere write <code>go with (mem.heap()) { ... }</code>.</li>
+<li><code>select</code> supports <code>recv</code>, <code>send</code>, <code>timeout(ms)</code>, and <code>default</code>.</li>
+<li>Send on a closed channel yields <code>ErrClosed</code>.</li>
+</ul>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

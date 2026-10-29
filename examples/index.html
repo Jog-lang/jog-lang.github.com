@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Examples — Jog</title>
+  <link rel="stylesheet" href="../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../index.html">Home</a></li>
+<li class="nav-item"><a href="../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item is-active"><a href="../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Examples</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>Examples</h1>
+<p>Curated snippets that match V1 reality (<code>jog 0.0.1</code>). Copy into a module with a <code>jog.mod</code> and run <code>jog test</code> or <code>jog run</code>.</p>
+<h2>Hello</h2>
+<p>Minimal print via std:</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io
+
+fn main() {
+    io.println(&quot;Hello from Jog!&quot;)
+}</code></pre>
+<p><code>jog.mod</code>:</p>
+<pre><code>module hello</code></pre>
+<p>Direct libc (as in the compiler’s <code>examples/hello</code>):</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">extern {
+    fn puts(s: *const c_char): c_int
+}
+
+type c_char = i8
+type c_int = i32
+
+fn main() {
+    val greeting = c&quot;Hello from Jog!&quot;
+    if puts(greeting) &lt; 0 {
+        return
+    }
+}</code></pre>
+<h2>Basics</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn add(a: i32, b: i32): i32 {
+    return a + b
+}
+
+fn square(x: i64): i64 = x * x
+
+fn sumTo(n: i64): i64 {
+    var total: i64 = 0
+    for i in 0..n {
+        total += i
+    }
+    return total
+}
+
+fn sign(x: i64): i64 {
+    return if x &gt; 0 { 1 } else if x &lt; 0 { -1 } else { 0 }
+}</code></pre>
+<h2>Types and structs</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn widen(a: i32): i64 = a as i64
+
+struct Point {
+    x: i64
+    y: i64
+}
+
+fn Point.len2(): i64 = self.x * self.x + self.y * self.y
+
+fn *Point.move(dx: i64, dy: i64) {
+    self.x += dx
+    self.y += dy
+}
+
+enum Shape {
+    Circle(r: f64)
+    Rect(w: f64, h: f64)
+    Empty
+}
+
+fn area(s: Shape): f64 {
+    return when s {
+        Circle(r) -&gt; 3.0 * r * r
+        Rect(w, h) -&gt; w * h
+        Empty -&gt; 0.0
+    }
+}</code></pre>
+<h2>Errors</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">struct NotFound {
+    tag: u8
+}
+
+fn NotFound.message(): str = &quot;not found&quot;
+
+var notFound: NotFound
+val ErrNotFound = &amp;notFound
+
+fn lookup(key: str): (i64, error?) {
+    if key == &quot;answer&quot; {
+        return 42, null
+    }
+    return 0, ErrNotFound
+}</code></pre>
+<h2>Contexts and lists</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
+import std.list
+
+fn squares(n: i64): list.List&lt;i64&gt; with (a: mem.Allocator) {
+    var xs: list.List&lt;i64&gt;
+    for i in 0..n {
+        xs.push(i * i)
+    }
+    return xs
+}
+
+fn heapDemo(): i64 {
+    var total: i64 = 0
+    with (mem.heap()) {
+        var xs = squares(4)
+        defer xs.free()
+        for i in 0 as usize..xs.len {
+            total += xs.get(i)
+        }
+    }
+    return total
+}</code></pre>
+<h2>Generics</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.cmp
+
+fn maxOf&lt;T: cmp.Ordered&gt;(a: T, b: T): T {
+    if a &gt; b {
+        return a
+    }
+    return b
+}
+
+struct Pair&lt;A, B&gt; {
+    first: A
+    second: B
+}
+
+fn Pair&lt;A, B&gt;.swap(): Pair&lt;B, A&gt; =
+    Pair&lt;B, A&gt;(first: self.second, second: self.first)</code></pre>
+<h2>Lambdas</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn apply(x: i64, f: (i64) -&gt; i64): i64 = f(x)
+
+fn repeat(n: i64, body: (i64) -&gt; ()) {
+    for i in 0..n {
+        body(i)
+    }
+}
+
+fn lambdas(): i64 {
+    val double = (x: i64) -&gt; { x * 2 }
+    var sum: i64 = 0
+    repeat(3) { i -&gt; sum += i }
+    repeat(2) { sum += it }
+    return apply(5, double) + sum
+}</code></pre>
+<h2>Coroutines</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
+
+fn channelSum(): i64 {
+    var total: i64 = 0
+    scope {
+        val ch = Chan&lt;i64&gt;.init(4) with (mem.heap())
+        go with (mem.heap()) {
+            ch.send(1)
+            ch.send(2)
+            ch.close()
+        }
+        for v in ch {
+            total += v
+        }
+    }
+    return total
+}</code></pre>
+<h2>C interop</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.c
+
+extern {
+    fn abs(n: c.int): c.int
+}
+
+fn cAbs(n: i32): i32 = abs(n)</code></pre>
+<h2>Platform split</h2>
+<p>Core:</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">expect fn platform_name(): str</code></pre>
+<p>Windows:</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">actual fn platform_name(): str = &quot;windows&quot;</code></pre>
+<p>Posix (linux / macos):</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">actual fn platform_name(): str = &quot;posix&quot;</code></pre>
+<h2>Tests</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.testing
+
+@test
+fn packsWork() with (t: testing.Testing) {
+    t.expect(1 + 1 == 2)
+}
+
+@test(&quot;overflow panics&quot;)
+fn panicsWork() with (t: testing.Testing) {
+    var big: u8 = 255
+    t.expectPanic { big += 1 }
+}</code></pre>
+<p>Put tests in <code>*.test.jog</code> next to the code. See <a href="../getting-started/">Getting started</a> and <a href="../tour/">Tour</a>.</p>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

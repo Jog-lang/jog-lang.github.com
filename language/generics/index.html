@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generics — Jog</title>
+  <link rel="stylesheet" href="../../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../../index.html">Home</a></li>
+<li class="nav-item"><a href="../../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../../language/functions/index.html">Functions</a></li>
+<li class="nav-item is-active"><a href="../../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Generics</h1>
+        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+      </header>
+      <article class="wiki-content">
+        <h1>Generics</h1>
+<p><strong>Status:</strong> partial</p>
+<p>Type parameters <code>&lt;T&gt;</code>, interface constraints, monomorphization. Std constraints live in <code>std.cmp</code>.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.cmp
+
+fn maxOf&lt;T: cmp.Ordered&gt;(a: T, b: T): T {
+    if a &gt; b { return a }
+    return b
+}
+
+fn total&lt;T: cmp.Number&gt;(start: T, xs: []T): T {
+    var sum = start
+    for i in 0 as usize..xs.len {
+        sum = sum + xs[i]
+    }
+    return sum
+}
+
+struct Pair&lt;A, B&gt; {
+    first: A
+    second: B
+}
+
+fn Pair&lt;A, B&gt;.swap(): Pair&lt;B, A&gt; =
+    Pair&lt;B, A&gt;(first: self.second, second: self.first)</code></pre>
+<p>Call as <code>maxOf(3, 7)</code> or <code>byteSize&lt;i32&gt;(3)</code>. Construct as <code>Pair&lt;i64, str&gt;(first: 1, second: &quot;one&quot;)</code>.</p>
+<p>Type sets: <code>Signed</code>, <code>Unsigned</code>, <code>Integer</code>, <code>Float</code>, <code>Number</code> (<code>~T</code> includes distinct types over <code>T</code>).</p>
+<h2>V1 notes</h2>
+<ul>
+<li>No zero value for a bare <code>T</code> inside a generic body — pass a start value instead of <code>var x: T</code>.</li>
+<li><code>str</code> does not satisfy <code>cmp.Ordered</code>.</li>
+<li>User <code>op&lt;=&gt;</code> / <code>op==</code> methods do not yet make the operators apply, so user types cannot meet <code>Ordered</code> / <code>Comparable</code> that way.</li>
+<li>Calls like <code>list.empty&lt;i64&gt;()</code> may fail to infer <code>T</code> from another package; write <code>var xs: list.List&lt;i64&gt;</code> instead.</li>
+</ul>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

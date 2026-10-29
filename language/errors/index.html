@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Errors — Jog</title>
+  <link rel="stylesheet" href="../../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../../index.html">Home</a></li>
+<li class="nav-item"><a href="../../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../../language/generics/index.html">Generics</a></li>
+<li class="nav-item is-active"><a href="../../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Errors</h1>
+        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+      </header>
+      <article class="wiki-content">
+        <h1>Errors</h1>
+<p><strong>Status:</strong> partial</p>
+<p>Errors are values. Fallible functions return <code>error?</code> last. There is no <code>try</code>; propagate explicitly. <code>defer</code> / <code>errdefer</code> for cleanup. Panics abort.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">struct NotFound {
+    tag: u8
+}
+
+fn NotFound.message(): str = &quot;not found&quot;
+
+var notFound: NotFound
+val ErrNotFound = &amp;notFound
+
+fn lookup(key: str): (i64, error?) {
+    if key == &quot;answer&quot; {
+        return 42, null
+    }
+    return 0, ErrNotFound
+}
+
+fn twice(key: str): (i64, error?) {
+    val (v, err) = lookup(key)
+    if err != null {
+        return 0, err
+    }
+    return v * 2, null
+}</code></pre>
+<p><code>error</code> is a universe interface with <code>message(): str</code>. Sentinels are usually global pointers compared by identity.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn build(fail: bool): (bytes, error?) with (a: mem.Allocator) {
+    val (buf, err) = a.alloc(16, 1)
+    if err != null {
+        return bytes(), err
+    }
+    errdefer {
+        a.free(buf)
+    }
+    if fail {
+        return bytes(), ErrNotFound
+    }
+    return buf, null
+}</code></pre>
+<ul>
+<li><code>defer</code> runs when the <strong>enclosing block</strong> exits (LIFO).</li>
+<li><code>errdefer</code> runs only when the function returns a non-null last <code>error?</code>.</li>
+<li><code>panic(&quot;msg&quot;)</code> aborts immediately; pending <code>defer</code>s do not run.</li>
+</ul>
+<h2>V1 notes</h2>
+<ul>
+<li><code>err!!.message()</code> is not usable yet (<code>error</code> methods are not checked).</li>
+<li>Compare against sentinel pointers (<code>err == ErrNotFound</code>).</li>
+<li><code>errorScope</code>, <code>errorf</code>, and <code>unreachable()</code> are not available; <code>ErrCancelled</code> and <code>ErrClosed</code> are predeclared.</li>
+</ul>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
