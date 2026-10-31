@@ -77,7 +77,15 @@ fn lambdas(): i64 {
         else -&gt; &quot;error&quot;
     }
 }</code></pre>
-<p>First match wins. Enum <code>when</code> must be exhaustive or have <code>else</code>.</p>
+<p>First match wins. Enum <code>when</code> must be exhaustive or have <code>else</code>. Payload fields bind by position or by name; <code>_</code> skips one. <code>when</code> on a <code>T?</code> uses <code>Some</code> / <code>None</code> (and <code>null</code> as another spelling of <code>None</code>). A subject that is not an enum needs <code>else</code> when the <code>when</code> is used as a value.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Kind { Ok, Err(code: i64) }
+
+fn label(k: Kind): str {
+    return when k {
+        Ok -&gt; &quot;ok&quot;
+        Err(code) -&gt; &quot;err&quot;
+    }
+}</code></pre>
 <h2>Pack parameters</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn sum(...i64: xs): i64 {
     var total: i64 = 0
@@ -86,7 +94,7 @@ fn lambdas(): i64 {
     }
     return total
 }</code></pre>
-<p>The pack is a <code>[]T</code> in the body and must be the last parameter.</p>
+<p>The pack is a <code>[]T</code> in the body and <strong>must be the last parameter</strong> (pack-last-param). Fixed parameters come first; a parameter after the pack is an error.</p>
 <h2>V1 notes</h2>
 <ul>
 <li>Non-escaping function parameters may capture locals by reference.</li>

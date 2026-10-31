@@ -50,7 +50,21 @@ fn sumTo(n: i64): i64 {
 }
 ```
 
-`for` is the only loop: `for cond { }`, `for i in a..b { }`, `for i, x in xs { }`. `if` and `when` are expressions.
+`for` is the only loop: `for cond { }`, `for i in a..b { }`, `for i, x in xs { }`. `if` and `when` are expressions. Enums use exhaustive `when` (or `else`) and `is` for variant tests:
+
+```jog
+enum Event {
+    Hit(dmg: i32)
+    Quit
+}
+
+fn apply(e: Event): i32 {
+    return when e {
+        Hit(dmg) -> dmg
+        Quit -> 0
+    }
+}
+```
 
 ## Packages
 

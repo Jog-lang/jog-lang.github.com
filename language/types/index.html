@@ -82,6 +82,8 @@ fn area(s: Shape): f64 = when s {
     Empty -&gt; 0.0
 }</code></pre>
 <p>Test variants with <code>is</code> or <code>when</code>, not <code>==</code>.</p>
+<h2>Intrinsics</h2>
+<p>Named scalars such as <code>i32</code> and <code>bool</code> are distinct types in the core prelude, marked <code>@intrinsic(...)</code> so the backend treats them as machine integers, floats, or flags. A user file may declare <code>@intrinsic(int)</code>, <code>@intrinsic(float)</code>, or <code>@intrinsic(bool)</code> only for an intrinsic the compiler already implements, with the same width and signedness rules as core.</p>
 <h2>Builtins</h2>
 <p><code>size(T)</code> and <code>align(T)</code> are compile-time layout queries (type arguments, not values).</p>
       </article>

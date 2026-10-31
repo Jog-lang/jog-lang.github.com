@@ -43,7 +43,18 @@ fn httpKind(code: i64): str {
 }
 ```
 
-First match wins. Enum `when` must be exhaustive or have `else`.
+First match wins. Enum `when` must be exhaustive or have `else`. Payload fields bind by position or by name; `_` skips one. `when` on a `T?` uses `Some` / `None` (and `null` as another spelling of `None`). A subject that is not an enum needs `else` when the `when` is used as a value.
+
+```jog
+enum Kind { Ok, Err(code: i64) }
+
+fn label(k: Kind): str {
+    return when k {
+        Ok -> "ok"
+        Err(code) -> "err"
+    }
+}
+```
 
 ## Pack parameters
 
@@ -57,7 +68,7 @@ fn sum(...i64: xs): i64 {
 }
 ```
 
-The pack is a `[]T` in the body and must be the last parameter.
+The pack is a `[]T` in the body and **must be the last parameter** (pack-last-param). Fixed parameters come first; a parameter after the pack is an error.
 
 ## V1 notes
 

@@ -30,6 +30,28 @@ The standard library ships with the compiler (`../std` next to the `jog` binary,
 | `std.os` | `argc` / `argv`, `env` |
 | `std.proc` | Run a child and capture output (Windows-focused in V1) |
 | `std.math` | `floor`, `ceil`, `log2`, `exp2` via libm |
+| `std.text` | `str` views and helpers: `slice`, `starts_with`, `trim`, `parse_u64_dec`, `clone`, `split`, `runes`, … |
+
+## `std.text`
+
+Import `std.text` for string views and owned copies. Most helpers allocate nothing. `clone`, case maps, `replace`, and `runes` need an `Allocator` context.
+
+```jog
+import std.text as texts
+
+fn digits(s: str): (u64, bool) {
+    return texts.parse_u64_dec(s.trim())
+}
+```
+
+| API | Role |
+|---|---|
+| `slice` / `starts_with` / `ends_with` / `index_of` / `contains` | Views and search (empty needle matches at the start) |
+| `trim` / `trim_start` / `trim_end` | Strip ASCII space, tab, CR, LF |
+| `is_digit` / `is_hex_digit` / `parse_u64_dec` | ASCII classification and unsigned decimal parse (no overflow check) |
+| `clone` / `to_lower` / `to_upper` / `replace` | Owned copies |
+| `split` / `count` | Split views; non-overlapping match count |
+| `rune_iter` / `runes` | UTF-8 code points (ill-formed bytes → U+FFFD) |
 
 ## Quick examples
 

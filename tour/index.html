@@ -83,7 +83,18 @@ fn sumTo(n: i64): i64 {
     }
     return total
 }</code></pre>
-<p><code>for</code> is the only loop: <code>for cond { }</code>, <code>for i in a..b { }</code>, <code>for i, x in xs { }</code>. <code>if</code> and <code>when</code> are expressions.</p>
+<p><code>for</code> is the only loop: <code>for cond { }</code>, <code>for i in a..b { }</code>, <code>for i, x in xs { }</code>. <code>if</code> and <code>when</code> are expressions. Enums use exhaustive <code>when</code> (or <code>else</code>) and <code>is</code> for variant tests:</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Event {
+    Hit(dmg: i32)
+    Quit
+}
+
+fn apply(e: Event): i32 {
+    return when e {
+        Hit(dmg) -&gt; dmg
+        Quit -&gt; 0
+    }
+}</code></pre>
 <h2>Packages</h2>
 <p>A <strong>folder is a package</strong>. Files in the same folder see each other without imports. <code>import std.io</code> and <code>import net.http as h</code> are per-file. The entry point is <code>fn main()</code> in the root package (the folder with <code>jog.mod</code>). <code>*.test.jog</code> files compile only under <code>jog test</code>.</p>
 <h2>Types in brief</h2>

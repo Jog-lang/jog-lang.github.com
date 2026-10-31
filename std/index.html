@@ -114,6 +114,47 @@
 <td><code>std.math</code></td>
 <td><code>floor</code>, <code>ceil</code>, <code>log2</code>, <code>exp2</code> via libm</td>
 </tr>
+<tr>
+<td><code>std.text</code></td>
+<td><code>str</code> views and helpers: <code>slice</code>, <code>starts_with</code>, <code>trim</code>, <code>parse_u64_dec</code>, <code>clone</code>, <code>split</code>, <code>runes</code>, …</td>
+</tr>
+</tbody></table>
+<h2><code>std.text</code></h2>
+<p>Import <code>std.text</code> for string views and owned copies. Most helpers allocate nothing. <code>clone</code>, case maps, <code>replace</code>, and <code>runes</code> need an <code>Allocator</code> context.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.text as texts
+
+fn digits(s: str): (u64, bool) {
+    return texts.parse_u64_dec(s.trim())
+}</code></pre>
+<table>
+<thead><tr>
+<th>API</th>
+<th>Role</th>
+</tr></thead><tbody>
+<tr>
+<td><code>slice</code> / <code>starts_with</code> / <code>ends_with</code> / <code>index_of</code> / <code>contains</code></td>
+<td>Views and search (empty needle matches at the start)</td>
+</tr>
+<tr>
+<td><code>trim</code> / <code>trim_start</code> / <code>trim_end</code></td>
+<td>Strip ASCII space, tab, CR, LF</td>
+</tr>
+<tr>
+<td><code>is_digit</code> / <code>is_hex_digit</code> / <code>parse_u64_dec</code></td>
+<td>ASCII classification and unsigned decimal parse (no overflow check)</td>
+</tr>
+<tr>
+<td><code>clone</code> / <code>to_lower</code> / <code>to_upper</code> / <code>replace</code></td>
+<td>Owned copies</td>
+</tr>
+<tr>
+<td><code>split</code> / <code>count</code></td>
+<td>Split views; non-overlapping match count</td>
+</tr>
+<tr>
+<td><code>rune_iter</code> / <code>runes</code></td>
+<td>UTF-8 code points (ill-formed bytes → U+FFFD)</td>
+</tr>
 </tbody></table>
 <h2>Quick examples</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io

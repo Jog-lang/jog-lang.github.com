@@ -68,3 +68,7 @@ See [Modules](modules/). With dependencies, use [JogBuild](tools/) or pass `--mo
 ## Building `jog` from source
 
 See [Getting started](getting-started/) and the [JogCompiler](https://github.com/Jog-lang/JogCompiler) README.
+
+## Self-hosted compiler (`jogc`)
+
+JogCompiler also builds **`jogc`**, a Jog rewrite of the frontend on the same module formats. Today `jogc lex`, `parse`, and `check` match the seed `jog` on the differential tests; lowering and C emit are not ready yet, so `build` / `run` / `test` still go through `jog`. Commands and flags mirror the table above where implemented (`--module` on `check` included).

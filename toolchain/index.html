@@ -160,6 +160,8 @@
 <p>See <a href="modules/">Modules</a>. With dependencies, use <a href="tools/">JogBuild</a> or pass <code>--module</code> yourself.</p>
 <h2>Building <code>jog</code> from source</h2>
 <p>See <a href="getting-started/">Getting started</a> and the <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> README.</p>
+<h2>Self-hosted compiler (<code>jogc</code>)</h2>
+<p>JogCompiler also builds <strong><code>jogc</code></strong>, a Jog rewrite of the frontend on the same module formats. Today <code>jogc lex</code>, <code>parse</code>, and <code>check</code> match the seed <code>jog</code> on the differential tests; lowering and C emit are not ready yet, so <code>build</code> / <code>run</code> / <code>test</code> still go through <code>jog</code>. Commands and flags mirror the table above where implemented (<code>--module</code> on <code>check</code> included).</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>
