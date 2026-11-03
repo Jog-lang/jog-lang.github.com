@@ -4,7 +4,16 @@ title: Toolchain
 
 # Toolchain
 
-The seed compiler command is `jog` (`jog version` → `jog 0.0.1`). It reads a module, typechecks, lowers to IR, emits C, and links with clang or gcc. WebAssembly uses `--target wasm32` with `wasm-ld` (and Node for `run`).
+JogCompiler ships two compilers with the **same command surface**:
+
+| Binary | Branch | Built from |
+|---|---|---|
+| `jog` | `seed` | C sources (CMake) |
+| `jogc` | `develop` | Jog sources (`jog build` with an external `jog`) |
+
+Both report `jog 0.0.1` style versioning for the preview. They read a module, typecheck, lower to IR, emit C, and link with clang or gcc. WebAssembly uses `--target wasm32` with `wasm-ld` (and Node for `run`).
+
+For day-to-day work and for tools (JogBuild, JogLSP), pick one binary and point `JOG` at it — that is the compiler those tools will run. The seed `jog` remains the reference for V1; `jogc` is the self-hosted path and shares the commands below.
 
 ## Commands
 
@@ -12,12 +21,14 @@ The seed compiler command is `jog` (`jog version` → `jog 0.0.1`). It reads a m
 usage: jog <command> [arguments]
 ```
 
+The same table applies to `jogc`:
+
 | Command | Does |
 |---|---|
 | `build` | Compile to an executable |
 | `run` | Debug build, then run (`--` passes args to the program) |
 | `test` | Build with `*.test.jog`, run `@test` functions |
-| `check` | Load, resolve, typecheck (no lowering) |
+| `check` | Load, resolve, typecheck — **stops before lowering** |
 | `emit-c` | Print generated C |
 | `emit-ir` | Print IR |
 | `parse` / `lex` | Debug one file |
@@ -52,23 +63,19 @@ Common flags:
 |---|---|
 | `JOG_CC` | C compiler instead of searching clang then gcc |
 | `JOG_ROOT` | Folder containing `std/` and `runtime/` |
-| `JOG` | Path to `jog` for JogBuild / JogLSP (not read by `jog` itself) |
+| `JOG` | Path to the compiler binary for JogBuild / JogLSP / building `jogc` (not read by `jog` itself when you invoke it directly) |
 | `JOG_CACHE` | JogBuild module cache |
 
 ## Diagnostics
 
 Text on stderr: `file:line:column: severity: message`.
 
-`jog check --diag=json` prints JSON Lines on stdout with `file`, `line`, `column` (1-based bytes), `severity`, `message`.
+`jog check --diag=json` (or `jogc check --diag=json`) prints JSON Lines on stdout with `file`, `line`, `column` (1-based bytes), `severity`, `message`.
 
 ## Project layout
 
 See [Modules](modules/). With dependencies, use [JogBuild](tools/) or pass `--module` yourself.
 
-## Building `jog` from source
+## Building from source
 
-See [Getting started](getting-started/) and the [JogCompiler](https://github.com/Jog-lang/JogCompiler) README.
-
-## Self-hosted compiler (`jogc`)
-
-JogCompiler also builds **`jogc`**, a Jog rewrite of the frontend on the same module formats. Today `jogc lex`, `parse`, and `check` match the seed `jog` on the differential tests; lowering and C emit are not ready yet, so `build` / `run` / `test` still go through `jog`. Commands and flags mirror the table above where implemented (`--module` on `check` included).
+See [Getting started](getting-started/): check out `seed` for `jog`, then `develop` with `JOG` set for `jogc`. Repository and branch links: [Links](links/).

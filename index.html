@@ -50,15 +50,16 @@
         <h1>Jog</h1>
 <p><strong>Jog</strong> is a low-level language in the same place as C and Go. You work with functions, explicit layouts, and pointers. Memory is managed by hand — no GC. Code is built from structs, methods, and structural interfaces. On top of that sit coroutines, contexts (implicit parameters matched by type), and a few conveniences from Go, Kotlin, and TypeScript.</p>
 <p>Jog compiles to C (then clang or gcc), and can also target WebAssembly. Source files use <code>.jog</code>. The module manifest is <code>jog.mod</code>. Distributed libraries use <code>.jogz</code> archives.</p>
-<p>This site is the public user wiki for an <strong>early preview</strong>: the seed compiler is <code>jog 0.0.1</code>. Expect rough edges; guides and examples describe what V1 actually compiles today.</p>
+<p>This site is the public user wiki for an <strong>early preview</strong>. There are two compilers in <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a>: the C seed <strong><code>jog</code></strong> (<code>jog 0.0.1</code>) on branch <code>seed</code>, and the Jog self-hosted <strong><code>jogc</code></strong> on branch <code>develop</code>. Expect rough edges; guides and examples describe what V1 actually compiles today. The editor is still <a href="tools/">diagnostics-only</a>.</p>
 <h2>Start here</h2>
 <ul>
-<li><a href="getting-started/">Getting started</a> — build <code>jog</code>, write a hello module, run and test</li>
+<li><a href="getting-started/">Getting started</a> — build <code>jog</code> from <code>seed</code>, then <code>jogc</code> from <code>develop</code></li>
 <li><a href="tour/">Tour</a> — short language walkthrough</li>
 <li><a href="language/">Language</a> — feature pages with V1 status badges</li>
+<li><a href="toolchain/">Toolchain</a> — shared <code>jog</code> / <code>jogc</code> commands</li>
 <li><a href="examples/">Examples</a> — curated programs</li>
 <li><a href="tools/">Tools</a> — JogBuild and JogLSP</li>
-<li><a href="links/">Links</a> — public repositories</li>
+<li><a href="links/">Links</a> — public repositories and branches</li>
 </ul>
 <h2>Taste</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">struct Player {

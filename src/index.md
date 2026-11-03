@@ -8,16 +8,17 @@ title: Jog
 
 Jog compiles to C (then clang or gcc), and can also target WebAssembly. Source files use `.jog`. The module manifest is `jog.mod`. Distributed libraries use `.jogz` archives.
 
-This site is the public user wiki for an **early preview**: the seed compiler is `jog 0.0.1`. Expect rough edges; guides and examples describe what V1 actually compiles today.
+This site is the public user wiki for an **early preview**. There are two compilers in [JogCompiler](https://github.com/Jog-lang/JogCompiler): the C seed **`jog`** (`jog 0.0.1`) on branch `seed`, and the Jog self-hosted **`jogc`** on branch `develop`. Expect rough edges; guides and examples describe what V1 actually compiles today. The editor is still [diagnostics-only](tools/).
 
 ## Start here
 
-- [Getting started](getting-started/) — build `jog`, write a hello module, run and test
+- [Getting started](getting-started/) — build `jog` from `seed`, then `jogc` from `develop`
 - [Tour](tour/) — short language walkthrough
 - [Language](language/) — feature pages with V1 status badges
+- [Toolchain](toolchain/) — shared `jog` / `jogc` commands
 - [Examples](examples/) — curated programs
 - [Tools](tools/) — JogBuild and JogLSP
-- [Links](links/) — public repositories
+- [Links](links/) — public repositories and branches
 
 ## Taste
 

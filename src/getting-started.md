@@ -4,16 +4,30 @@ title: Getting started
 
 # Getting started
 
-Jog is at early preview (`jog 0.0.1`). You build the seed compiler from source, then use it to check, test, and run modules.
+Jog is at early preview (`jog 0.0.1`). The [JogCompiler](https://github.com/Jog-lang/JogCompiler) repository has two long-lived branches:
+
+| Branch | Binary | Role |
+|---|---|---|
+| `seed` | `jog` | C stage-0 compiler |
+| `develop` | `jogc` | Jog self-hosted compiler (needs an external `jog`) |
+
+Build `jog` first, then use that binary to build `jogc`.
 
 ## Prerequisites
 
 - Windows x86-64 or Linux x86-64 (aarch64 is not supported yet)
-- CMake, Ninja, and a C toolchain: **gcc** and **clang** on `PATH`
+- For `seed`: CMake, Ninja, and a C toolchain (**gcc** and **clang** on `PATH`)
+- For `develop`: a working `jog` binary (from `seed`) and a C linker toolchain for the emitted C
 
-## Build the compiler
+## Build `jog` (`seed`)
 
-Clone [JogCompiler](https://github.com/Jog-lang/JogCompiler) and build:
+Clone JogCompiler and check out **`seed`**:
+
+```
+git clone https://github.com/Jog-lang/JogCompiler.git
+cd JogCompiler
+git checkout seed
+```
 
 **Windows**
 
@@ -33,7 +47,7 @@ cmake --build build-linux --target jog
 
 The binary is `build-linux/jog`. Optionally: `scripts/check.sh`.
 
-Put that binary on your `PATH`, or set `JOG` to its full path (tools such as JogBuild and JogLSP honor `JOG`). Std ships next to the compiler (`../std` from the binary’s folder), or set `JOG_ROOT` to the folder that contains `std/` and `runtime/`.
+Put that binary on your `PATH`, or set `JOG` to its full path (JogBuild, JogLSP, and a `develop` checkout honor `JOG`). Std ships next to the compiler (`../std` from the binary’s folder), or set `JOG_ROOT` to the folder that contains `std/` and `runtime/`.
 
 Confirm:
 
@@ -42,6 +56,21 @@ jog version
 ```
 
 You should see `jog 0.0.1`.
+
+## Build `jogc` (`develop`)
+
+Check out **`develop`** (same clone, or a second worktree). This branch has no CMake seed tree — stage 0 is always an external `jog`.
+
+```
+git checkout develop
+export JOG=/path/to/seed/build-linux/jog   # Windows: path to build/jog.exe
+"$JOG" build -o out/jogc
+./out/jogc version
+```
+
+On Windows the output is typically `out/jogc.exe`. `JOG` must be set, or `jog` must be on `PATH`.
+
+Day-to-day work can use either binary. For shipping modules and for tools that spawn a compiler, point `JOG` at the one you intend to run; see [Toolchain](toolchain/) and [Tools](tools/).
 
 ## Hello module
 
@@ -71,9 +100,9 @@ jog run
 jog build -o out/hello
 ```
 
-`jog run` builds in debug mode and runs the program. `jog build` writes an executable under `out/` (or the `-o` path). Add `out/` to `.gitignore`.
+`jog run` builds in debug mode and runs the program. `jog build` writes an executable under `out/` (or the `-o` path). Add `out/` to `.gitignore`. The same commands work with `jogc` once you have built it.
 
-You can also try the compiler’s own example after a build:
+You can also try the compiler’s own example after a seed build:
 
 ```
 jog run examples/hello
@@ -96,7 +125,7 @@ fn adds() with (t: testing.Testing) {
 jog test
 ```
 
-`jog check` only typechecks; confirm with `jog test` or `jog build` when you care about lowering and linking.
+`jog check` / `jogc check` only typecheck and stop before lowering; confirm with `test` or `build` when you care about IR, C emit, and linking.
 
 ## Next
 

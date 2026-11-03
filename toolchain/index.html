@@ -48,9 +48,29 @@
       </header>
       <article class="wiki-content">
         <h1>Toolchain</h1>
-<p>The seed compiler command is <code>jog</code> (<code>jog version</code> → <code>jog 0.0.1</code>). It reads a module, typechecks, lowers to IR, emits C, and links with clang or gcc. WebAssembly uses <code>--target wasm32</code> with <code>wasm-ld</code> (and Node for <code>run</code>).</p>
+<p>JogCompiler ships two compilers with the <strong>same command surface</strong>:</p>
+<table>
+<thead><tr>
+<th>Binary</th>
+<th>Branch</th>
+<th>Built from</th>
+</tr></thead><tbody>
+<tr>
+<td><code>jog</code></td>
+<td><code>seed</code></td>
+<td>C sources (CMake)</td>
+</tr>
+<tr>
+<td><code>jogc</code></td>
+<td><code>develop</code></td>
+<td>Jog sources (<code>jog build</code> with an external <code>jog</code>)</td>
+</tr>
+</tbody></table>
+<p>Both report <code>jog 0.0.1</code> style versioning for the preview. They read a module, typecheck, lower to IR, emit C, and link with clang or gcc. WebAssembly uses <code>--target wasm32</code> with <code>wasm-ld</code> (and Node for <code>run</code>).</p>
+<p>For day-to-day work and for tools (JogBuild, JogLSP), pick one binary and point <code>JOG</code> at it — that is the compiler those tools will run. The seed <code>jog</code> remains the reference for V1; <code>jogc</code> is the self-hosted path and shares the commands below.</p>
 <h2>Commands</h2>
 <pre><code>usage: jog &lt;command&gt; [arguments]</code></pre>
+<p>The same table applies to <code>jogc</code>:</p>
 <table>
 <thead><tr>
 <th>Command</th>
@@ -70,7 +90,7 @@
 </tr>
 <tr>
 <td><code>check</code></td>
-<td>Load, resolve, typecheck (no lowering)</td>
+<td>Load, resolve, typecheck — <strong>stops before lowering</strong></td>
 </tr>
 <tr>
 <td><code>emit-c</code></td>
@@ -146,7 +166,7 @@
 </tr>
 <tr>
 <td><code>JOG</code></td>
-<td>Path to <code>jog</code> for JogBuild / JogLSP (not read by <code>jog</code> itself)</td>
+<td>Path to the compiler binary for JogBuild / JogLSP / building <code>jogc</code> (not read by <code>jog</code> itself when you invoke it directly)</td>
 </tr>
 <tr>
 <td><code>JOG_CACHE</code></td>
@@ -155,13 +175,11 @@
 </tbody></table>
 <h2>Diagnostics</h2>
 <p>Text on stderr: <code>file:line:column: severity: message</code>.</p>
-<p><code>jog check --diag=json</code> prints JSON Lines on stdout with <code>file</code>, <code>line</code>, <code>column</code> (1-based bytes), <code>severity</code>, <code>message</code>.</p>
+<p><code>jog check --diag=json</code> (or <code>jogc check --diag=json</code>) prints JSON Lines on stdout with <code>file</code>, <code>line</code>, <code>column</code> (1-based bytes), <code>severity</code>, <code>message</code>.</p>
 <h2>Project layout</h2>
 <p>See <a href="modules/">Modules</a>. With dependencies, use <a href="tools/">JogBuild</a> or pass <code>--module</code> yourself.</p>
-<h2>Building <code>jog</code> from source</h2>
-<p>See <a href="getting-started/">Getting started</a> and the <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> README.</p>
-<h2>Self-hosted compiler (<code>jogc</code>)</h2>
-<p>JogCompiler also builds <strong><code>jogc</code></strong>, a Jog rewrite of the frontend on the same module formats. Today <code>jogc lex</code>, <code>parse</code>, and <code>check</code> match the seed <code>jog</code> on the differential tests; lowering and C emit are not ready yet, so <code>build</code> / <code>run</code> / <code>test</code> still go through <code>jog</code>. Commands and flags mirror the table above where implemented (<code>--module</code> on <code>check</code> included).</p>
+<h2>Building from source</h2>
+<p>See <a href="getting-started/">Getting started</a>: check out <code>seed</code> for <code>jog</code>, then <code>develop</code> with <code>JOG</code> set for <code>jogc</code>. Repository and branch links: <a href="links/">Links</a>.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

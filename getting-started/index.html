@@ -48,14 +48,36 @@
       </header>
       <article class="wiki-content">
         <h1>Getting started</h1>
-<p>Jog is at early preview (<code>jog 0.0.1</code>). You build the seed compiler from source, then use it to check, test, and run modules.</p>
+<p>Jog is at early preview (<code>jog 0.0.1</code>). The <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> repository has two long-lived branches:</p>
+<table>
+<thead><tr>
+<th>Branch</th>
+<th>Binary</th>
+<th>Role</th>
+</tr></thead><tbody>
+<tr>
+<td><code>seed</code></td>
+<td><code>jog</code></td>
+<td>C stage-0 compiler</td>
+</tr>
+<tr>
+<td><code>develop</code></td>
+<td><code>jogc</code></td>
+<td>Jog self-hosted compiler (needs an external <code>jog</code>)</td>
+</tr>
+</tbody></table>
+<p>Build <code>jog</code> first, then use that binary to build <code>jogc</code>.</p>
 <h2>Prerequisites</h2>
 <ul>
 <li>Windows x86-64 or Linux x86-64 (aarch64 is not supported yet)</li>
-<li>CMake, Ninja, and a C toolchain: <strong>gcc</strong> and <strong>clang</strong> on <code>PATH</code></li>
+<li>For <code>seed</code>: CMake, Ninja, and a C toolchain (<strong>gcc</strong> and <strong>clang</strong> on <code>PATH</code>)</li>
+<li>For <code>develop</code>: a working <code>jog</code> binary (from <code>seed</code>) and a C linker toolchain for the emitted C</li>
 </ul>
-<h2>Build the compiler</h2>
-<p>Clone <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> and build:</p>
+<h2>Build <code>jog</code> (<code>seed</code>)</h2>
+<p>Clone JogCompiler and check out <strong><code>seed</code></strong>:</p>
+<pre><code>git clone https://github.com/Jog-lang/JogCompiler.git
+cd JogCompiler
+git checkout seed</code></pre>
 <p><strong>Windows</strong></p>
 <pre><code>cmake -S . -B build -G Ninja
 cmake --build build --target jog</code></pre>
@@ -64,10 +86,18 @@ cmake --build build --target jog</code></pre>
 <pre><code>cmake -S . -B build-linux -G Ninja
 cmake --build build-linux --target jog</code></pre>
 <p>The binary is <code>build-linux/jog</code>. Optionally: <code>scripts/check.sh</code>.</p>
-<p>Put that binary on your <code>PATH</code>, or set <code>JOG</code> to its full path (tools such as JogBuild and JogLSP honor <code>JOG</code>). Std ships next to the compiler (<code>../std</code> from the binary’s folder), or set <code>JOG_ROOT</code> to the folder that contains <code>std/</code> and <code>runtime/</code>.</p>
+<p>Put that binary on your <code>PATH</code>, or set <code>JOG</code> to its full path (JogBuild, JogLSP, and a <code>develop</code> checkout honor <code>JOG</code>). Std ships next to the compiler (<code>../std</code> from the binary’s folder), or set <code>JOG_ROOT</code> to the folder that contains <code>std/</code> and <code>runtime/</code>.</p>
 <p>Confirm:</p>
 <pre><code>jog version</code></pre>
 <p>You should see <code>jog 0.0.1</code>.</p>
+<h2>Build <code>jogc</code> (<code>develop</code>)</h2>
+<p>Check out <strong><code>develop</code></strong> (same clone, or a second worktree). This branch has no CMake seed tree — stage 0 is always an external <code>jog</code>.</p>
+<pre><code>git checkout develop
+export JOG=/path/to/seed/build-linux/jog   # Windows: path to build/jog.exe
+&quot;$JOG&quot; build -o out/jogc
+./out/jogc version</code></pre>
+<p>On Windows the output is typically <code>out/jogc.exe</code>. <code>JOG</code> must be set, or <code>jog</code> must be on <code>PATH</code>.</p>
+<p>Day-to-day work can use either binary. For shipping modules and for tools that spawn a compiler, point <code>JOG</code> at the one you intend to run; see <a href="toolchain/">Toolchain</a> and <a href="tools/">Tools</a>.</p>
 <h2>Hello module</h2>
 <p>Create a folder with a manifest and a main file:</p>
 <p><code>jog.mod</code></p>
@@ -82,8 +112,8 @@ fn main() {
 <pre><code>jog check
 jog run
 jog build -o out/hello</code></pre>
-<p><code>jog run</code> builds in debug mode and runs the program. <code>jog build</code> writes an executable under <code>out/</code> (or the <code>-o</code> path). Add <code>out/</code> to <code>.gitignore</code>.</p>
-<p>You can also try the compiler’s own example after a build:</p>
+<p><code>jog run</code> builds in debug mode and runs the program. <code>jog build</code> writes an executable under <code>out/</code> (or the <code>-o</code> path). Add <code>out/</code> to <code>.gitignore</code>. The same commands work with <code>jogc</code> once you have built it.</p>
+<p>You can also try the compiler’s own example after a seed build:</p>
 <pre><code>jog run examples/hello</code></pre>
 <h2>Tests</h2>
 <p>Put tests in <code>*.test.jog</code> next to the code (same package). Mark functions with <code>@test</code>:</p>
@@ -94,7 +124,7 @@ fn adds() with (t: testing.Testing) {
     t.expect(1 + 1 == 2)
 }</code></pre>
 <pre><code>jog test</code></pre>
-<p><code>jog check</code> only typechecks; confirm with <code>jog test</code> or <code>jog build</code> when you care about lowering and linking.</p>
+<p><code>jog check</code> / <code>jogc check</code> only typecheck and stop before lowering; confirm with <code>test</code> or <code>build</code> when you care about IR, C emit, and linking.</p>
 <h2>Next</h2>
 <ul>
 <li><a href="tour/">Tour</a> — language overview</li>
