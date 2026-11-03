@@ -127,8 +127,13 @@ jog test
 
 `jog check` / `jogc check` only typecheck and stop before lowering; confirm with `test` or `build` when you care about IR, C emit, and linking.
 
+## Editor (optional)
+
+[JogLSP](https://github.com/Jog-lang/JogLSP) provides the VS Code / Cursor extension: highlighting plus diagnostics on open/change/save, document symbols, hover, go to definition, and completion. The language server is built against JogCompiler **`develop`** (`require jogc` / in-process frontend). You still set `JOG` (or `jog.compilerPath`) to a seed `jog` for tooling such as `jog-build`. Build and install steps are on [Tools](tools/).
+
 ## Next
 
 - [Tour](tour/) — language overview
 - [Toolchain](toolchain/) — commands, flags, layout
+- [Tools](tools/) — JogBuild and JogLSP
 - [Examples](examples/)

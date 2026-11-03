@@ -27,18 +27,26 @@ Prefer `jog-build` when a module has `require` lines. The compiler itself never 
 
 ## JogLSP
 
-[JogLSP](https://github.com/Jog-lang/JogLSP) is a **diagnostics-only** language server. On save it runs `jog check --diag=json` (via the binary `JOG` / `jog.compilerPath` points at) and surfaces those diagnostics over LSP (stdin/stdout framing).
+[JogLSP](https://github.com/Jog-lang/JogLSP) is the language server and VS Code / Cursor extension. It is still early preview: it does what is listed below, not rename, find-references, formatting, or inlay hints.
 
-It does not yet provide completions, go-to-definition, hover, document symbols, or rename. Highlighting in the VS Code / Cursor extension comes from a TextMate grammar and does not need the server. Richer editor features land later; this page will be updated when they ship.
+**What the extension does today**
 
-Build the server from `server/` in that repo:
+- TextMate highlighting, comments, and brackets (client-side; no server required for color)
+- **Diagnostics** on open, change, and save — in-process load and typecheck via the JogCompiler **`develop`** frontend (`require jogc`), with open buffers overriding disk; module `require` lines still go through `jog-build deps --flags`
+- **Document symbols** — top-level declarations (functions, types, bindings)
+- **Hover** — type and declaration when known; empty on unknown or error nodes
+- **Go to definition** — across files and packages, including std
+- **Completion** — names in scope, and fields/methods after `.` (incomplete tokens still complete)
+
+Build the server from `server/` against a local **`develop`** checkout of JogCompiler (the server’s `jog.mod` requires module `jogc`):
 
 ```
-jog test
-jog build
+# from JogLSP/server, with JOG pointing at seed jog
+jog build -o out/server --module jogc=../../JogCompiler
+jog test --module jogc=../../JogCompiler
 ```
 
-The editor package lives under `editors/vscode`. Point `jog.compilerPath` (or `JOG`) at the compiler you want check-on-save to use.
+The editor package is under `editors/vscode`. Copy `server/out/server` (or `server.exe`) into `editors/vscode/bin/`, package the VSIX, and install. Settings: `jog.serverPath` for the server binary; `jog.compilerPath` (or `JOG`) for the seed `jog` used when resolving `jog-build` and related tools.
 
 ## Maturity
 
@@ -47,6 +55,6 @@ The editor package lives under `editors/vscode`. Point `jog.compilerPath` (or `J
 | `jog` | Seed compiler (C, branch `seed`) | Reference for V1; builds native and wasm |
 | `jogc` | Self-hosted compiler (Jog, branch `develop`) | Same commands; built with an external `jog` |
 | JogBuild | Dependency / pack / invoke | Local deps and archives; remote fetch later |
-| JogLSP | Editor diagnostics | Check-on-save only until the next wiki pass |
+| JogLSP | Editor language server | Diags on open/change/save, symbols, hover, definition, completion; no rename/refs/format yet |
 
 See also [Toolchain](toolchain/) for compiler commands and [Links](links/).

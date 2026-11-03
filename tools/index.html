@@ -59,12 +59,21 @@
 out/jog-build help</code></pre>
 <p>Prefer <code>jog-build</code> when a module has <code>require</code> lines. The compiler itself never follows dependency paths — without <code>--module</code> flags it reports that a required module was not given.</p>
 <h2>JogLSP</h2>
-<p><a href="https://github.com/Jog-lang/JogLSP">JogLSP</a> is a <strong>diagnostics-only</strong> language server. On save it runs <code>jog check --diag=json</code> (via the binary <code>JOG</code> / <code>jog.compilerPath</code> points at) and surfaces those diagnostics over LSP (stdin/stdout framing).</p>
-<p>It does not yet provide completions, go-to-definition, hover, document symbols, or rename. Highlighting in the VS Code / Cursor extension comes from a TextMate grammar and does not need the server. Richer editor features land later; this page will be updated when they ship.</p>
-<p>Build the server from <code>server/</code> in that repo:</p>
-<pre><code>jog test
-jog build</code></pre>
-<p>The editor package lives under <code>editors/vscode</code>. Point <code>jog.compilerPath</code> (or <code>JOG</code>) at the compiler you want check-on-save to use.</p>
+<p><a href="https://github.com/Jog-lang/JogLSP">JogLSP</a> is the language server and VS Code / Cursor extension. It is still early preview: it does what is listed below, not rename, find-references, formatting, or inlay hints.</p>
+<p><strong>What the extension does today</strong></p>
+<ul>
+<li>TextMate highlighting, comments, and brackets (client-side; no server required for color)</li>
+<li><strong>Diagnostics</strong> on open, change, and save — in-process load and typecheck via the JogCompiler <strong><code>develop</code></strong> frontend (<code>require jogc</code>), with open buffers overriding disk; module <code>require</code> lines still go through <code>jog-build deps --flags</code></li>
+<li><strong>Document symbols</strong> — top-level declarations (functions, types, bindings)</li>
+<li><strong>Hover</strong> — type and declaration when known; empty on unknown or error nodes</li>
+<li><strong>Go to definition</strong> — across files and packages, including std</li>
+<li><strong>Completion</strong> — names in scope, and fields/methods after <code>.</code> (incomplete tokens still complete)</li>
+</ul>
+<p>Build the server from <code>server/</code> against a local <strong><code>develop</code></strong> checkout of JogCompiler (the server’s <code>jog.mod</code> requires module <code>jogc</code>):</p>
+<pre><code># from JogLSP/server, with JOG pointing at seed jog
+jog build -o out/server --module jogc=../../JogCompiler
+jog test --module jogc=../../JogCompiler</code></pre>
+<p>The editor package is under <code>editors/vscode</code>. Copy <code>server/out/server</code> (or <code>server.exe</code>) into <code>editors/vscode/bin/</code>, package the VSIX, and install. Settings: <code>jog.serverPath</code> for the server binary; <code>jog.compilerPath</code> (or <code>JOG</code>) for the seed <code>jog</code> used when resolving <code>jog-build</code> and related tools.</p>
 <h2>Maturity</h2>
 <table>
 <thead><tr>
@@ -89,8 +98,8 @@ jog build</code></pre>
 </tr>
 <tr>
 <td>JogLSP</td>
-<td>Editor diagnostics</td>
-<td>Check-on-save only until the next wiki pass</td>
+<td>Editor language server</td>
+<td>Diags on open/change/save, symbols, hover, definition, completion; no rename/refs/format yet</td>
 </tr>
 </tbody></table>
 <p>See also <a href="toolchain/">Toolchain</a> for compiler commands and <a href="links/">Links</a>.</p>

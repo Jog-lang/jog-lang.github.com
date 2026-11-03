@@ -125,10 +125,13 @@ fn adds() with (t: testing.Testing) {
 }</code></pre>
 <pre><code>jog test</code></pre>
 <p><code>jog check</code> / <code>jogc check</code> only typecheck and stop before lowering; confirm with <code>test</code> or <code>build</code> when you care about IR, C emit, and linking.</p>
+<h2>Editor (optional)</h2>
+<p><a href="https://github.com/Jog-lang/JogLSP">JogLSP</a> provides the VS Code / Cursor extension: highlighting plus diagnostics on open/change/save, document symbols, hover, go to definition, and completion. The language server is built against JogCompiler <strong><code>develop</code></strong> (<code>require jogc</code> / in-process frontend). You still set <code>JOG</code> (or <code>jog.compilerPath</code>) to a seed <code>jog</code> for tooling such as <code>jog-build</code>. Build and install steps are on <a href="tools/">Tools</a>.</p>
 <h2>Next</h2>
 <ul>
 <li><a href="tour/">Tour</a> — language overview</li>
 <li><a href="toolchain/">Toolchain</a> — commands, flags, layout</li>
+<li><a href="tools/">Tools</a> — JogBuild and JogLSP</li>
 <li><a href="examples/">Examples</a></li>
 </ul>
       </article>
