@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JogSDL — Jog</title>
+  <link rel="stylesheet" href="../../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../../index.html">Home</a></li>
+<li class="nav-item"><a href="../../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item is-active"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">JogSDL</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>JogSDL</h1>
+<p><a href="https://github.com/Jog-lang/JogSDL">JogSDL</a> is hand-written <strong>SDL3 3.4.18</strong> bindings for Jog (<code>module jog_sdl</code>, <code>kind library</code>). Apps import the idiomatic layer only; raw C symbols stay private.</p>
+<h2>Import path</h2>
+<p>Use <strong><code>jog_sdl.sdl</code></strong> (and its subpackages). Example: <code>import jog_sdl.sdl</code> or <code>import jog_sdl.sdl.window</code>.</p>
+<table>
+<thead><tr>
+<th>Layer</th>
+<th>What it is</th>
+</tr></thead><tbody>
+<tr>
+<td><code>sdl.*</code></td>
+<td>Public Jog API: handles, enums, flags, <code>SDLError?</code> results</td>
+</tr>
+<tr>
+<td><code>sdl3.*</code></td>
+<td>Unexported raw <code>@link(&quot;SDL3&quot;)</code> / <code>SDL_*</code> externs</td>
+</tr>
+</tbody></table>
+<p>API docs live <strong>in-module</strong> (comments on public <code>sdl.*</code> declarations). The official C reference is the <a href="https://wiki.libsdl.org/SDL3">SDL3 wiki</a>.</p>
+<h2>Layout</h2>
+<ul>
+<li><code>kind library</code> with directory <code>source</code> trees (<code>sdl</code>, <code>sdl3</code>) and <code>export sdl</code> / <code>export sdl.&lt;sub&gt;</code></li>
+<li>KEEP packages for the main surface: window, render, events, input, timer (plus audio/gpu helpers)</li>
+<li><code>jog-build pack</code> produces <code>jog_sdl-&lt;version&gt;.jogz</code></li>
+<li>Native demos keep <code>link.* SDL3</code> and <code>libdir.*</code> pointing at an SDL3 install (the <code>.jogz</code> carries Jog source, not the C library)</li>
+</ul>
+<h2>Platforms</h2>
+<p><strong>Linux x86-64 first.</strong> Emscripten demos live under <code>examples/*-emscripten</code> (for example <code>examples/window-emscripten</code>) and build with <code>--target wasm32-emscripten</code>.</p>
+<h2>Short window example</h2>
+<p>Copied from JogSDL <code>examples/window/main.jog</code> (not re-checked here — this environment has no v2 <code>jog</code>).</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import jog_sdl.sdl
+
+val LIMIT_MS: u64 = 1500
+
+fn main() {
+    if Init(InitFlag.Video) != null {
+        panic(&quot;SDL Init failed\n&quot;)
+    }
+
+    val (win, win_err) = CreateWindow(c&quot;JogSDL v2&quot;, 640, 480, WindowFlag.Resizable)
+    if (win_err != null || !win.ok()) {
+        panic(&quot;SDL CreateWindow failed\n&quot;)
+    }
+
+    val (ren, ren_err) = win.create_renderer()
+    if (ren_err != null || !ren.ok()) {
+        panic(&quot;SDL CreateRenderer failed\n&quot;)
+    }
+
+    var ev = make_event_buf()
+    var running = 1
+    var rect = frect(220.0 as f32, 160.0 as f32, 200.0 as f32, 160.0 as f32)
+    val start = GetTicks()
+
+    while (running != 0) {
+        while (ev.poll()) {
+            val kind = ev.kind()
+            if (kind == EventTypeId.Quit || kind == EventTypeId.WindowCloseRequested) {
+                running = 0
+            }
+            if (kind == EventTypeId.KeyDown) {
+                if (ev.scancode() == Scancode.Escape) {
+                    running = 0
+                }
+            }
+        }
+
+        if (running == 0) {
+            break
+        }
+        if (GetTicks() - start &gt;= LIMIT_MS) {
+            break
+        }
+
+        ren.set_draw_color(color(12, 48, 64, 255))
+        ren.clear()
+        ren.set_draw_color(color(80, 200, 180, 255))
+        ren.fill_rect(&amp;rect)
+        ren.present()
+        Delay(16)
+    }
+
+    ren.destroy()
+    win.destroy()
+    Quit()
+    print(&quot;window demo exit\n&quot;)
+}</code></pre>
+<p>A matching <code>jog.mod</code> path-requires the library (folder or <code>.jogz</code>) and links SDL3:</p>
+<pre><code>module window_demo
+version 0.1.0
+require jog_sdl ../path/to/jog_sdl   # or a jog_sdl-*.jogz
+link.linux SDL3
+libdir.linux ../path/to/sdl3/lib</code></pre>
+<p>Build with JogBuild from the example folder (<code>jog-build build</code> / <code>jog-build run</code>), with <code>JOG</code> pointing at the v2 compiler.</p>
+<h2>Repo</h2>
+<p><a href="https://github.com/Jog-lang/JogSDL">https://github.com/Jog-lang/JogSDL</a></p>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+  <script src="../../assets/prism/prism.min.js"></script>
+  <script src="../../assets/prism/components/prism-clike.min.js"></script>
+  <script src="../../assets/prism/components/prism-c.min.js"></script>
+  <script src="../../assets/prism/components/prism-bash.min.js"></script>
+  <script src="../../assets/prism/components/prism-json.min.js"></script>
+  <script src="../../assets/prism/components/prism-cmake.min.js"></script>
+  <script src="../../assets/prism/components/prism-zig.min.js"></script>
+  <script src="../../assets/prism/prism-jog.js"></script>
+</body>
+</html>

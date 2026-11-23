@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item is-active"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -48,30 +53,14 @@
       </header>
       <article class="wiki-content">
         <h1>Examples</h1>
-<p>Curated snippets that match V1 reality (<code>jog 0.0.1</code>). Copy into a module with a <code>jog.mod</code> and run <code>jog test</code> or <code>jog run</code>.</p>
+<p>Curated snippets that match the Zig tip (<code>jog</code> 0.2.x-v2). Copy into a module with <code>root main.jog</code> and run <code>jog test</code> or <code>jog build</code>.</p>
 <h2>Hello</h2>
-<p>Minimal print via std:</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io
-
-fn main() {
-    io.println(&quot;Hello from Jog!&quot;)
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn main() {
+    print(&quot;Hello from Jog!\n&quot;)
 }</code></pre>
 <p><code>jog.mod</code>:</p>
-<pre><code>module hello</code></pre>
-<p>Direct libc (as in the compiler’s <code>examples/hello</code>):</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">extern {
-    fn puts(s: *const c_char): c_int
-}
-
-type c_char = i8
-type c_int = i32
-
-fn main() {
-    val greeting = c&quot;Hello from Jog!&quot;
-    if puts(greeting) &lt; 0 {
-        return
-    }
-}</code></pre>
+<pre><code>module hello
+root main.jog</code></pre>
 <h2>Basics</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn add(a: i32, b: i32): i32 {
     return a + b
@@ -88,7 +77,9 @@ fn sumTo(n: i64): i64 {
 }
 
 fn sign(x: i64): i64 {
-    return if x &gt; 0 { 1 } else if x &lt; 0 { -1 } else { 0 }
+    if x &gt; 0 { return 1 }
+    if x &lt; 0 { return -1 }
+    return 0
 }</code></pre>
 <h2>Types and structs</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn widen(a: i32): i64 = a as i64
@@ -100,143 +91,61 @@ struct Point {
 
 fn Point.len2(): i64 = self.x * self.x + self.y * self.y
 
-fn *Point.move(dx: i64, dy: i64) {
-    self.x += dx
-    self.y += dy
+enum Color {
+    Red
+    Green
+    Blue
 }
 
-enum Shape {
-    Circle(r: f64)
-    Rect(w: f64, h: f64)
-    Empty
-}
-
-fn area(s: Shape): f64 {
-    return when s {
-        Circle(r) -&gt; 3.0 * r * r
-        Rect(w, h) -&gt; w * h
-        Empty -&gt; 0.0
+fn colorCode(c: Color): i64 {
+    return when c {
+        Red -&gt; 1
+        Green -&gt; 2
+        Blue -&gt; 3
     }
 }</code></pre>
-<h2>Errors</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">struct NotFound {
-    tag: u8
-}
-
-fn NotFound.message(): str = &quot;not found&quot;
-
-var notFound: NotFound
-val ErrNotFound = &amp;notFound
-
-fn lookup(key: str): (i64, error?) {
-    if key == &quot;answer&quot; {
-        return 42, null
-    }
-    return 0, ErrNotFound
-}</code></pre>
-<h2>Contexts and lists</h2>
+<h2>Contexts</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
-import std.list
 
-fn squares(n: i64): list.List&lt;i64&gt; with (a: mem.Allocator) {
-    var xs: list.List&lt;i64&gt;
-    for i in 0..n {
-        xs.push(i * i)
+fn copyText(s: str): str with (a: mem.Allocator) {
+    val (raw, err) = a.alloc(s.len, align(u8))
+    if err != null {
+        panic(&quot;out of memory&quot;)
     }
-    return xs
-}
-
-fn heapDemo(): i64 {
-    var total: i64 = 0
-    with (mem.heap()) {
-        var xs = squares(4)
-        defer xs.free()
-        for i in 0 as usize..xs.len {
-            total += xs.get(i)
-        }
-    }
-    return total
+    return raw
 }</code></pre>
 <h2>Generics</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.cmp
 
 fn maxOf&lt;T: cmp.Ordered&gt;(a: T, b: T): T {
-    if a &gt; b {
-        return a
-    }
+    if a &gt; b { return a }
     return b
-}
-
-struct Pair&lt;A, B&gt; {
-    first: A
-    second: B
-}
-
-fn Pair&lt;A, B&gt;.swap(): Pair&lt;B, A&gt; =
-    Pair&lt;B, A&gt;(first: self.second, second: self.first)</code></pre>
-<h2>Lambdas</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn apply(x: i64, f: (i64) -&gt; i64): i64 = f(x)
-
-fn repeat(n: i64, body: (i64) -&gt; ()) {
-    for i in 0..n {
-        body(i)
-    }
-}
-
-fn lambdas(): i64 {
-    val double = (x: i64) -&gt; { x * 2 }
-    var sum: i64 = 0
-    repeat(3) { i -&gt; sum += i }
-    repeat(2) { sum += it }
-    return apply(5, double) + sum
 }</code></pre>
 <h2>Coroutines</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn worker(arg: *byte) {
+    yield()
+}
 
-fn channelSum(): i64 {
-    var total: i64 = 0
-    scope {
-        val ch = Chan&lt;i64&gt;.init(4) with (mem.heap())
-        go with (mem.heap()) {
-            ch.send(1)
-            ch.send(2)
-            ch.close()
-        }
-        for v in ch {
-            total += v
-        }
-    }
-    return total
+fn main() {
+    go(worker, null)
+    coro_drain()
 }</code></pre>
 <h2>C interop</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.c
+<pre data-lang="jog" class="language-jog"><code class="language-jog">type c_int = i32
 
 extern {
-    fn abs(n: c.int): c.int
+    fn abs(n: c_int): c_int
 }
 
 fn cAbs(n: i32): i32 = abs(n)</code></pre>
-<h2>Platform split</h2>
-<p>Core:</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">expect fn platform_name(): str</code></pre>
-<p>Windows:</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">actual fn platform_name(): str = &quot;windows&quot;</code></pre>
-<p>Posix (linux / macos):</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">actual fn platform_name(): str = &quot;posix&quot;</code></pre>
 <h2>Tests</h2>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.testing
 
 @test
 fn packsWork() with (t: testing.Testing) {
     t.expect(1 + 1 == 2)
-}
-
-@test(&quot;overflow panics&quot;)
-fn panicsWork() with (t: testing.Testing) {
-    var big: u8 = 255
-    t.expectPanic { big += 1 }
 }</code></pre>
-<p>Put tests in <code>*.test.jog</code> next to the code. See <a href="../getting-started/">Getting started</a> and <a href="../tour/">Tour</a>.</p>
+<p>See <a href="../getting-started/">Getting started</a> and <a href="../tour/">Tour</a>.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

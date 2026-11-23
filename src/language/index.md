@@ -4,7 +4,7 @@ title: Language
 
 # Language
 
-Jog’s feature map for the Zig tip (`jog` 0.2.x-v2). Each page summarizes the design and calls out gaps that are still open in [[bootstrap/Friction]] terms.
+Jog’s feature map for the Zig tip (`jog` 0.2.x-v2). Each page summarizes the design and calls out gaps that are still open on this tip.
 
 | Topic | On v2 tip | Page |
 |---|---|---|

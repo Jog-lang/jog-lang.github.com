@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,59 +49,26 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Contexts</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Contexts</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>A context is a parameter the caller does not write; the compiler fills it from values in scope <strong>by type</strong>.</p>
-<p>Declare with <code>with (name: Type)</code>. Provide with:</p>
-<ul>
-<li>a <code>with (value) { ... }</code> block</li>
-<li><code>context name = value</code> for the rest of the block</li>
-<li><code>call(...) with (value)</code> at one call site</li>
-</ul>
+<p>Implicit parameters matched by type. Allocators are the main example.</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
-import std.list
-import std.arena
 
 fn copyText(s: str): str with (a: mem.Allocator) {
     val (raw, err) = a.alloc(s.len, align(u8))
     if err != null {
         panic(&quot;out of memory&quot;)
     }
-    for i in 0 as usize..s.len {
-        raw.ptr[i] = s.ptr[i]
-    }
     return raw
 }
 
-fn heapDemo(): i64 {
-    var total: i64 = 0
-    with (mem.heap()) {
-        var xs: list.List&lt;i64&gt;
-        for i in 0..4 {
-            xs.push(i * i)
-        }
-        defer xs.free()
-        for i in 0 as usize..xs.len {
-            total += xs.get(i)
-        }
-    }
-    return total
-}
-
-fn arenaDemo(): usize {
-    var ar = arena.init(0)
-    defer ar.release()
-    var n: usize = 0
-    with (&amp;ar) {
-        val s = copyText(&quot;hey&quot;)
-        n = s.len
-    }
-    return n
+fn demo(): usize {
+    val s = copyText(&quot;abc&quot;) with (mem.heap())
+    return s.len
 }</code></pre>
-<p>Public functions must declare their contexts; private functions and lambdas may infer them. <code>main</code> starts with runtime defaults (allocator, error allocator, scope, logger), so it can call allocating code directly. Other entry paths must declare or provide what they use.</p>
+<p>Provide contexts with <code>with (value) { … }</code>, <code>context name = value</code>, or <code>call(…) with (value)</code>.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

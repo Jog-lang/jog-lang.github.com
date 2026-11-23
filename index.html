@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="std/index.html">Std</a></li>
 <li class="nav-item"><a href="toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="links/index.html">Links</a></li>
 </ul>
@@ -49,40 +54,43 @@
       <article class="wiki-content">
         <h1>Jog</h1>
 <p><strong>Jog</strong> is a low-level language in the same place as C and Go. You work with functions, explicit layouts, and pointers. Memory is managed by hand — no GC. Code is built from structs, methods, and structural interfaces. On top of that sit coroutines, contexts (implicit parameters matched by type), and a few conveniences from Go, Kotlin, and TypeScript.</p>
-<p>Jog compiles to C (then clang or gcc), and can also target WebAssembly. Source files use <code>.jog</code>. The module manifest is <code>jog.mod</code>. Distributed libraries use <code>.jogz</code> archives.</p>
-<p>This site is the public user wiki for an <strong>early preview</strong>. There are two compilers in <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a>: the C seed <strong><code>jog</code></strong> (<code>jog 0.0.1</code>) on branch <code>seed</code>, and the Jog self-hosted <strong><code>jogc</code></strong> on branch <code>develop</code>. Expect rough edges; guides and examples describe what V1 actually compiles today. The editor is still <a href="tools/">diagnostics-only</a>.</p>
+<p>The product compiler is the Zig-hosted <strong><code>jog</code></strong> (<code>jog</code> 0.2.x-v2) on JogCompiler branch <strong><code>develop</code></strong> (tracking alias <strong><code>v2</code></strong>). Native builds go IR → asm → <code>zig cc</code>; WebAssembly uses <code>--target wasm32-emscripten</code> (IR → C → emcc). Source files use <code>.jog</code>. The module manifest is <code>jog.mod</code>. Distributed libraries use <code>.jogz</code> archives.</p>
+<p>This site is the public user wiki for an <strong>early preview</strong>. Expect rough edges; guides describe what the Zig tip actually compiles. Older C seed (<code>seed</code>) and self-hosted Jog (<code>develop-jogc</code>) trees are archives only.</p>
 <h2>Start here</h2>
 <ul>
-<li><a href="getting-started/">Getting started</a> — build <code>jog</code> from <code>seed</code>, then <code>jogc</code> from <code>develop</code></li>
+<li><a href="getting-started/">Getting started</a> — build <code>jog</code> with Zig from <code>develop</code></li>
 <li><a href="tour/">Tour</a> — short language walkthrough</li>
-<li><a href="language/">Language</a> — feature pages with V1 status badges</li>
-<li><a href="toolchain/">Toolchain</a> — shared <code>jog</code> / <code>jogc</code> commands</li>
+<li><a href="language/">Language</a> — feature pages (gaps called out where still open)</li>
+<li><a href="toolchain/">Toolchain</a> — <code>jog</code> commands</li>
 <li><a href="examples/">Examples</a> — curated programs</li>
 <li><a href="tools/">Tools</a> — JogBuild and JogLSP</li>
+<li><a href="libraries/">Libraries</a> — JogSDL and JogEngine</li>
 <li><a href="links/">Links</a> — public repositories and branches</li>
 </ul>
 <h2>Taste</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">struct Player {
-    Entity
-    name: str
-    hp: i32
+<pre data-lang="jog" class="language-jog"><code class="language-jog">struct Point {
+    x: i64
+    y: i64
 }
 
-fn *Player.hit(dmg: i32) {
-    self.hp -= dmg
+fn Point.len2(): i64 = self.x * self.x + self.y * self.y
+
+fn *Point.move(dx: i64, dy: i64) {
+    self.x += dx
+    self.y += dy
 }
 
-enum Event {
-    Hit(dmg: i32)
-    Heal(hp: i32)
-    Quit
+enum Color {
+    Red
+    Green
+    Blue
 }
 
-fn *Player.apply(e: Event) {
-    when e {
-        Hit(dmg) -&gt; self.hit(dmg)
-        Heal(hp) -&gt; self.hp += hp
-        Quit -&gt; {}
+fn colorCode(c: Color): i64 {
+    return when c {
+        Red -&gt; 1
+        Green -&gt; 2
+        Blue -&gt; 3
     }
 }</code></pre>
       </article>

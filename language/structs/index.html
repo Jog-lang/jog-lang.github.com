@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,19 +49,12 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Structs</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Structs</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>Value types with fields, defaults, methods outside the type, embedding, and extensions.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">struct Config {
-    name: str
-    retries: i32 = 3
-    verbose: bool
-}
-
-struct Point {
+<p>C layout, methods outside the type, pointer receivers for mutation.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">struct Point {
     x: i64
     y: i64
 }
@@ -66,30 +64,11 @@ fn Point.len2(): i64 = self.x * self.x + self.y * self.y
 fn *Point.move(dx: i64, dy: i64) {
     self.x += dx
     self.y += dy
-}
-
-fn i64.isEven(): bool = self % 2 == 0
-
-struct Entity {
-    id: u64
-    pos: Point
-}
-
-struct Player {
-    Entity
-    name: str
 }</code></pre>
+<h2>Not yet on v2</h2>
 <ul>
-<li>Literals: named (<code>Config(name: &quot;srv&quot;)</code>), positional (<code>Point(1, 2)</code>), or zero (<code>Point()</code>). No heap allocation from a literal alone.</li>
-<li><code>fn T.m</code> is a read-only <code>self</code>; <code>fn *T.m</code> can mutate. Calling a pointer method on a value takes <code>&amp;</code> automatically.</li>
-<li>Methods declared in the type’s package; the same syntax in another package is an extension (public members only).</li>
-<li>Embedding promotes fields.</li>
-</ul>
-<h2>V1 notes</h2>
-<ul>
-<li>Call methods on a bound value, not directly on a fresh literal (<code>val p = Point(...); p.len2()</code>).</li>
-<li>Pointer methods on array elements: take <code>val e = &amp;arr[i]</code> first.</li>
-<li><code>@packed</code> is accepted but ignored for size.</li>
+<li>Struct embedding (<code>struct Player { Entity … }</code>)</li>
+<li>Field assign through a <code>val p = &amp;c; p.field = …</code> in some cases — mutate via <code>*T</code> methods or the local binding</li>
 </ul>
       </article>
       <footer class="wiki-footer">

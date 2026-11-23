@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,36 +49,22 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Syntax</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Syntax</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>Keyword-led declarations, types after names, newline-terminated statements, public-by-default visibility.</p>
-<h2>Shape</h2>
+<p>Declarations start with a keyword; types come after names. Newlines end statements when the last token can end an expression.</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn add(a: i32, b: i32): i32 {
     return a + b
 }
 
-val Max = 64
-var counter: i64
-
-struct Point {
-    x: i64
-    y: i64
-}</code></pre>
+fn square(x: i64): i64 = x * x</code></pre>
+<p>Visibility defaults to public; <code>private</code> / <code>private(package)</code> / <code>private(file)</code> narrow it.</p>
+<h2>Not yet on v2</h2>
 <ul>
-<li>Files: UTF-8 <code>.jog</code>. Comments: <code>//</code> and nested <code>/* */</code>. Documentation comments are <code>/** */</code> with <code>@param</code>, <code>@self</code>, <code>@context</code>, <code>@return</code> tags (convention; skipped like other comments).</li>
-<li>A newline ends a statement when the last token can end an expression. Trailing operators and <code>,</code> continue the line. <code>.</code> / <code>?.</code> / <code>?:</code> at the start of a line continue the previous expression.</li>
-<li>A trailing lambda’s <code>{</code> must be on the same line as the call.</li>
-<li>Visibility: bare <code>private</code> (or <code>private(file)</code>) is file-local; <code>private(package)</code> is the package; <code>private(scope)</code> on a field is methods of that struct only.</li>
-</ul>
-<h2>Keywords</h2>
-<p><code>fn var val type struct interface enum if else when for in break continue return defer errdefer go with context private import as is null true false bytes escaping const extern</code>. <code>quote</code> is reserved. <code>it</code> and <code>self</code> are implicit names, not keywords.</p>
-<h2>V1 notes</h2>
-<ul>
-<li><code>expect</code> / <code>actual</code> are contextual before a top-level <code>fn</code> for <a href="platforms/">platforms</a>.</li>
-<li>Unused imports are not reported yet.</li>
+<li><code>if</code> as an expression (<code>return if …</code>)</li>
+<li>Lambdas / trailing lambdas</li>
+<li>Default parameter values</li>
 </ul>
       </article>
       <footer class="wiki-footer">

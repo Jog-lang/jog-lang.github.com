@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,44 +49,12 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Comptime</h1>
-        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Comptime</h1>
-<p><strong>Status:</strong> partial</p>
-<p>Ordinary Jog can run inside the compiler for constants and annotations. There is no separate macro language.</p>
-<h2>What runs at compile time</h2>
-<table>
-<thead><tr>
-<th>Where</th>
-<th>Example</th>
-</tr></thead><tbody>
-<tr>
-<td>Top-level <code>val</code></td>
-<td><code>val Max = 1 + 2</code></td>
-</tr>
-<tr>
-<td>Constant positions</td>
-<td>array lengths</td>
-</tr>
-<tr>
-<td>Annotation arguments</td>
-<td><code>@align(n)</code></td>
-</tr>
-<tr>
-<td>Explicit <code>@comptime(expr)</code></td>
-<td>inside a function</td>
-</tr>
-</tbody></table>
-<p>Top-level <code>val</code> constants are evaluated by the compiler. Built-in annotations are handled at compile time.</p>
-<h2>Designed, not general yet</h2>
-<ul>
-<li>User-defined annotations via <code>@Annotation</code> functions (generate code next to a declaration) come after V1.</li>
-<li>Runtime reflection from module metadata is after V1.</li>
-<li><code>@embed(&quot;path&quot;)</code> and a broader comptime subset are specified; treat advanced metaprogramming as planned unless you have a working example under <code>jog test</code>.</li>
-</ul>
-<h2>Budget</h2>
-<p><code>jog build</code> / <code>jog run</code> accept <code>--comptime-steps N</code> (default a large IR instruction budget) to cap compile-time evaluation.</p>
+<p><code>size(T)</code> and <code>align(T)</code> are compile-time builtins. <code>@test</code> marks test functions.</p>
+<p>User-defined <code>@Annotation</code> codegen and rich reflection remain after the current tip.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

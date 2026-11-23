@@ -52,7 +52,7 @@ jog build . -o out/hello
 ./out/hello
 ```
 
-Builtin `print` writes bytes (add your own newline). `import std.io` is not reliable on this tip yet — see [Std](std/). Add `out/` to `.gitignore`.
+Builtin `print` writes bytes (add your own newline). `import std.io` is not reliable on this tip yet — see [Std](../std/). Add `out/` to `.gitignore`.
 
 Try a compiler example after the build:
 
@@ -82,11 +82,11 @@ jog test .
 
 ## Editor (optional)
 
-[JogLSP](https://github.com/Jog-lang/JogLSP) is a Zig language server for the v2 compiler: diagnostics via `jog check --diag=json`, symbols, hover, definition, completion. Set `JOG` (or `jog.compilerPath`) to your `jog` binary. Build steps: [Tools](tools/).
+[JogLSP](https://github.com/Jog-lang/JogLSP) is a Zig language server for the v2 compiler: diagnostics via `jog check --diag=json`, symbols, hover, definition, completion. Set `JOG` (or `jog.compilerPath`) to your `jog` binary. Build steps: [Tools](../tools/).
 
 ## Next
 
-- [Tour](tour/) — language overview
-- [Toolchain](toolchain/) — commands, flags, layout
-- [Tools](tools/) — JogBuild and JogLSP
-- [Examples](examples/)
+- [Tour](../tour/) — language overview
+- [Toolchain](../toolchain/) — commands, flags, layout
+- [Tools](../tools/) — JogBuild and JogLSP
+- [Examples](../examples/)

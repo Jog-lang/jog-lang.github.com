@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,48 +49,22 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Types</h1>
-        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Types</h1>
-<p><strong>Status:</strong> partial</p>
-<p>Scalars, views, arrays, pointers, options, tuples, distinct types, enums — with a few V1 limits around options and distinct-type operators.</p>
-<h2>Scalars and conversions</h2>
-<p><code>i8 i16 i32 i64 isize</code>, <code>u8 u16 u32 u64 usize</code>, <code>f32 f64</code>, <code>bool</code>, <code>rune</code>. Untyped integer literals default to <code>i64</code>, floats to <code>f64</code>. No implicit numeric conversions — use <code>as</code>. Checked casts and integer overflow panic at run time.</p>
+<p>Scalars, views, arrays, pointers, options, tuples, distinct types, plain enums — with limits around payloads, <code>str ==</code>, and some casts.</p>
+<ul>
+<li>Integers never convert implicitly: use <code>as</code>.</li>
+<li><code>str</code> is a read-only byte view (<code>.ptr</code>, <code>.len</code>). Prefer <code>s.ptr[i]</code> for bytes.</li>
+<li><code>*T?</code> optional pointers: <code>!!</code>, <code>?:</code> (safe-call <code>?.</code> still limited).</li>
+<li>Distinct types: <code>type Celsius: f64</code> — convert with <code>as</code>.</li>
+<li>Plain enums work with <code>when</code>. <strong>Enum payloads are not yet parsed.</strong></li>
+</ul>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn widen(a: i32): i64 = a as i64
-fn narrow(n: i64): u8 = n as u8</code></pre>
-<h2><code>str</code> and <code>bytes</code></h2>
-<p><code>bytes</code> is a pointer-plus-length view; <code>bytes[N]</code> is inline. <code>str</code> is <code>const bytes</code> (UTF-8 by convention, not NUL-terminated). Both have <code>.ptr</code> and <code>.len</code>. Prefer <code>s.ptr[i]</code> (unchecked) over <code>s[i] as u8</code> in V1.</p>
-<h2>Arrays, slices, pointers</h2>
-<p><code>[N]T</code> fixed arrays, <code>[]T</code> slices (bounds-checked), <code>*T</code> non-null pointers, <code>*const T</code>, <code>*void</code>. Field access and method calls auto-dereference.</p>
-<h2>Options</h2>
-<p><code>T?</code> is optional. The practical V1 case is <code>*T?</code>. Use <code>?.</code>, <code>?:</code>, and <code>!!</code>. Null narrowing in <code>if p != null { p.v }</code> is not checked yet — bind with <code>p!!</code> first. Prefer <code>when</code> with <code>Some</code> / <code>None</code> for <code>*T?</code>.</p>
-<h2>Tuples and distinct types</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn minmax(a: i64, b: i64): (i64, i64) {
-    if a &lt; b { return a, b }
-    return b, a
-}
 
 type Celsius: f64
-fn toF(c: Celsius): f64 = c as f64 * 1.8 + 32.0</code></pre>
-<p>Convert with <code>as</code>. V1 does not inherit operators on distinct types; compare the base type.</p>
-<h2>Enums</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Shape {
-    Circle(r: f64)
-    Rect(w: f64, h: f64)
-    Empty
-}
-
-fn area(s: Shape): f64 = when s {
-    Circle(r) -&gt; 3.0 * r * r
-    Rect(w, h) -&gt; w * h
-    Empty -&gt; 0.0
-}</code></pre>
-<p>Test variants with <code>is</code> or <code>when</code>, not <code>==</code>.</p>
-<h2>Intrinsics</h2>
-<p>Named scalars such as <code>i32</code> and <code>bool</code> are distinct types in the core prelude, marked <code>@intrinsic(...)</code> so the backend treats them as machine integers, floats, or flags. A user file may declare <code>@intrinsic(int)</code>, <code>@intrinsic(float)</code>, or <code>@intrinsic(bool)</code> only for an intrinsic the compiler already implements, with the same width and signedness rules as core.</p>
-<h2>Builtins</h2>
-<p><code>size(T)</code> and <code>align(T)</code> are compile-time layout queries (type arguments, not values).</p>
+fn warm(c: Celsius): bool = c as f64 &gt; 20.0</code></pre>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

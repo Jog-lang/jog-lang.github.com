@@ -14,4 +14,4 @@ interface Named {
 
 ## Caveats on v2
 
-Interface methods that return `str` have been observed to segfault in some harnesses — keep smoke tests thin and prefer integer-returning methods until Friction closes.
+Interface methods that return `str` have been observed to segfault in some harnesses — keep smoke tests thin and prefer integer-returning methods until this tip stabilizes.

@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -48,35 +53,16 @@
       </header>
       <article class="wiki-content">
         <h1>Language</h1>
-<p>Jog’s feature map. Each page summarizes the design and marks how far <strong>jog 0.0.1</strong> goes.</p>
-<p><strong>Status badges</strong></p>
-<table>
-<thead><tr>
-<th>Badge</th>
-<th>Meaning</th>
-</tr></thead><tbody>
-<tr>
-<td>works in V1</td>
-<td>Usable in everyday V1 code; small gaps called out on the page</td>
-</tr>
-<tr>
-<td>partial</td>
-<td>Important pieces work; notable design items still missing or limited</td>
-</tr>
-<tr>
-<td>planned</td>
-<td>Specified, not ready for general use in V1</td>
-</tr>
-</tbody></table>
+<p>Jog’s feature map for the Zig tip (<code>jog</code> 0.2.x-v2). Each page summarizes the design and calls out gaps that are still open on this tip.</p>
 <table>
 <thead><tr>
 <th>Topic</th>
-<th>Status</th>
+<th>On v2 tip</th>
 <th>Page</th>
 </tr></thead><tbody>
 <tr>
 <td>Syntax</td>
-<td>works in V1</td>
+<td>usable</td>
 <td><a href="syntax/">syntax</a></td>
 </tr>
 <tr>
@@ -86,22 +72,22 @@
 </tr>
 <tr>
 <td>Structs</td>
-<td>works in V1</td>
+<td>usable</td>
 <td><a href="structs/">structs</a></td>
 </tr>
 <tr>
 <td>Interfaces</td>
-<td>works in V1</td>
+<td>partial</td>
 <td><a href="interfaces/">interfaces</a></td>
 </tr>
 <tr>
 <td>Functions</td>
-<td>works in V1</td>
+<td>partial</td>
 <td><a href="functions/">functions</a></td>
 </tr>
 <tr>
 <td>Generics</td>
-<td>partial</td>
+<td>usable</td>
 <td><a href="generics/">generics</a></td>
 </tr>
 <tr>
@@ -111,7 +97,7 @@
 </tr>
 <tr>
 <td>Contexts</td>
-<td>works in V1</td>
+<td>usable</td>
 <td><a href="contexts/">contexts</a></td>
 </tr>
 <tr>
@@ -121,7 +107,7 @@
 </tr>
 <tr>
 <td>Coroutines</td>
-<td>works in V1</td>
+<td>partial (<code>go(fn,arg)</code>)</td>
 <td><a href="coroutines/">coroutines</a></td>
 </tr>
 <tr>
@@ -136,7 +122,7 @@
 </tr>
 <tr>
 <td>C interop</td>
-<td>works in V1</td>
+<td>usable</td>
 <td><a href="c-interop/">c-interop</a></td>
 </tr>
 </tbody></table>

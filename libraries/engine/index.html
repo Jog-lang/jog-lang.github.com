@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JogEngine — Jog</title>
+  <link rel="stylesheet" href="../../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../../index.html">Home</a></li>
+<li class="nav-item"><a href="../../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item is-active"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
+<li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">JogEngine</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>JogEngine</h1>
+<p><a href="https://github.com/Jog-lang/JogEngine">JogEngine</a> is a systems-based Jog game engine (<code>module jog_engine</code>, <code>kind library</code>). It focuses on <strong>CPU 2D and 3D</strong> first; GPU present goes behind a <code>PresentBackend</code> so the simulation does not rewrite when the present path changes.</p>
+<h2>Relationship to JogSDL</h2>
+<p>JogEngine <strong>consumes JogSDL via <code>.jogz</code></strong>, not by compiling against JogSDL source trees. Demos still link the native SDL3 library (<code>link.*</code> / <code>libdir.*</code>); the archive carries Jog packages only.</p>
+<p>Import style matches other directory-source libraries: <code>jog_engine.engine.&lt;pkg&gt;</code> (for example <code>import jog_engine.engine.core</code>), plus <code>import jog_sdl.sdl</code> for window and input.</p>
+<h2>Architecture (summary)</h2>
+<p>Not a full ECS. Systems, entities, and a frame message queue own the loop.</p>
+<table>
+<thead><tr>
+<th>Layer</th>
+<th>Owns</th>
+</tr></thead><tbody>
+<tr>
+<td>JogSDL</td>
+<td>Window, poll input, present, texture upload, audio stream, SDL_GPU/Vulkan</td>
+</tr>
+<tr>
+<td>JogEngine</td>
+<td>Frame loop, jobs, CPU 2D/3D, collision, messaging, assets, math/time</td>
+</tr>
+<tr>
+<td>Demos</td>
+<td>Content that proves milestones</td>
+</tr>
+</tbody></table>
+<p>Packages include <code>engine.core</code>, <code>engine.world</code>, <code>engine.app</code>, <code>engine.math</code>, <code>engine.time</code>, <code>engine.assets</code>, <code>engine.render2d</code>, <code>engine.render3d</code>, <code>engine.collision</code>, <code>engine.msg</code>, <code>engine.jobs</code>, and <code>engine.audio</code>.</p>
+<h2>Current phase</h2>
+<p>Phases <strong>0–5</strong> are landed: tooling, foundation, CPU 2D, CPU 3D soft-mesh, async IO/audio streaming, and GPU <code>PresentBackend</code> smoke (empty submit). Follow-on work includes textured GPU mesh present and core systems (<code>Clock</code> / <code>System</code> / <code>PhaseQueue</code>, <code>engine.world</code>, <code>engine.app</code>).</p>
+<p>Example demos in the repo: <code>examples/core_loop</code>, <code>examples/tilemap2d</code>, <code>examples/raycaster</code>, <code>examples/streaming</code>, <code>examples/present_gpu</code>, <code>examples/dust2_fps</code>, plus <code>examples/raycaster-emscripten</code>.</p>
+<h2>Repo</h2>
+<p><a href="https://github.com/Jog-lang/JogEngine">https://github.com/Jog-lang/JogEngine</a></p>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+  <script src="../../assets/prism/prism.min.js"></script>
+  <script src="../../assets/prism/components/prism-clike.min.js"></script>
+  <script src="../../assets/prism/components/prism-c.min.js"></script>
+  <script src="../../assets/prism/components/prism-bash.min.js"></script>
+  <script src="../../assets/prism/components/prism-json.min.js"></script>
+  <script src="../../assets/prism/components/prism-cmake.min.js"></script>
+  <script src="../../assets/prism/components/prism-zig.min.js"></script>
+  <script src="../../assets/prism/prism-jog.js"></script>
+</body>
+</html>

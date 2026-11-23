@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -48,17 +53,17 @@
       </header>
       <article class="wiki-content">
         <h1>Tour</h1>
-<p>A short walkthrough of what <strong>jog 0.0.1</strong> accepts today. For design depth and status badges, see <a href="language/">Language</a>.</p>
+<p>A short walkthrough of what <strong>jog 0.2.x-v2</strong> accepts today. For design depth and open gaps, see <a href="../language/">Language</a>.</p>
 <h2>At a glance</h2>
 <ul>
-<li>Low-level, C-like semantics: manual memory, no GC, no exceptions. Compiles to C, then clang or gcc.</li>
+<li>Low-level, C-like semantics: manual memory, no GC, no exceptions. Native: IR → asm → <code>zig cc</code>.</li>
 <li>Types after names. Declarations start with a keyword. Everything is <strong>public by default</strong>; <code>private</code> narrows it.</li>
 <li>Numbers never convert implicitly — every conversion is <code>as</code>. Integer overflow panics.</li>
-<li>Allocation goes through an <code>Allocator</code> passed as a <strong>context</strong> (an implicit parameter matched by type).</li>
-<li>Errors are values: a fallible function returns <code>error?</code> as its last result.</li>
+<li>Allocation goes through an <code>Allocator</code> passed as a <strong>context</strong>.</li>
+<li>Prefer builtin <code>print</code> for hello-world; std packages that import cleanly include <code>mem</code>, <code>list</code>, <code>testing</code>, and others listed on <a href="../std/">Std</a>.</li>
 </ul>
 <h2>Lexical basics</h2>
-<p>Files are UTF-8 <code>.jog</code>. Comments: <code>//</code> and nested <code>/* */</code>. A newline ends a statement when the last token can end an expression; a line ending in an operator or <code>,</code> continues. Lines starting with <code>.</code>, <code>?.</code>, or <code>?:</code> continue the previous line.</p>
+<p>Files are UTF-8 <code>.jog</code>. Comments: <code>//</code> and nested <code>/* */</code>. A newline ends a statement when the last token can end an expression; a line ending in an operator or <code>,</code> continues.</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn longSum(a: i64, b: i64, c: i64): i64 {
     val total = a +
         b +
@@ -76,6 +81,12 @@ fn add(a: i32, b: i32): i32 {
 
 fn square(x: i64): i64 = x * x
 
+fn sign(x: i64): i64 {
+    if x &gt; 0 { return 1 }
+    if x &lt; 0 { return -1 }
+    return 0
+}
+
 fn sumTo(n: i64): i64 {
     var total: i64 = 0
     for i in 0..n {
@@ -83,22 +94,23 @@ fn sumTo(n: i64): i64 {
     }
     return total
 }</code></pre>
-<p><code>for</code> is the only loop: <code>for cond { }</code>, <code>for i in a..b { }</code>, <code>for i, x in xs { }</code>. <code>if</code> and <code>when</code> are expressions. Enums use exhaustive <code>when</code> (or <code>else</code>) and <code>is</code> for variant tests:</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Event {
-    Hit(dmg: i32)
-    Quit
+<p><code>for</code> is the only loop: <code>for cond { }</code>, <code>for i in a..b { }</code>. <code>if</code> is a <strong>statement</strong> on this tip (not an expression). Plain enums use exhaustive <code>when</code>:</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Color {
+    Red
+    Green
 }
 
-fn apply(e: Event): i32 {
-    return when e {
-        Hit(dmg) -&gt; dmg
-        Quit -&gt; 0
+fn code(c: Color): i64 {
+    return when c {
+        Red -&gt; 1
+        Green -&gt; 2
     }
 }</code></pre>
+<p>Enum payloads, lambdas, and <code>if</code> expressions are specified but <strong>not yet</strong> on v2.</p>
 <h2>Packages</h2>
-<p>A <strong>folder is a package</strong>. Files in the same folder see each other without imports. <code>import std.io</code> and <code>import net.http as h</code> are per-file. The entry point is <code>fn main()</code> in the root package (the folder with <code>jog.mod</code>). <code>*.test.jog</code> files compile only under <code>jog test</code>.</p>
+<p>A <strong>folder is a package</strong>. Files listed in <code>jog.mod</code> (<code>root</code> / <code>source</code>) share declarations. <code>import std.mem</code> is per-file. The entry point is <code>fn main()</code> in the root package. <code>*.test.jog</code> files compile under <code>jog test</code>.</p>
 <h2>Types in brief</h2>
-<p>Integers (<code>i8</code>…<code>i64</code>, <code>u8</code>…<code>u64</code>, <code>isize</code>/<code>usize</code>), floats, <code>bool</code>, <code>rune</code>, <code>str</code> (read-only byte view), <code>bytes</code>, arrays <code>[N]T</code>, slices <code>[]T</code>, pointers <code>*T</code> / <code>*T?</code>, tuples, distinct types (<code>type Celsius: f64</code>), structs, enums, and structural interfaces.</p>
+<p>Integers, floats, <code>bool</code>, <code>str</code> (byte view), arrays <code>[N]T</code>, slices <code>[]T</code>, pointers <code>*T</code> / <code>*T?</code>, tuples, distinct types, structs, plain enums, structural interfaces.</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">fn widen(a: i32): i64 = a as i64
 
 struct Point {
@@ -107,48 +119,37 @@ struct Point {
 }
 
 fn Point.len2(): i64 = self.x * self.x + self.y * self.y</code></pre>
-<h2>Errors and contexts</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn lookup(key: str): (i64, error?) {
-    if key == &quot;answer&quot; {
-        return 42, null
-    }
-    return 0, ErrNotFound
-}
+<h2>Contexts</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
 
 fn copyText(s: str): str with (a: mem.Allocator) {
     val (raw, err) = a.alloc(s.len, align(u8))
     if err != null {
         panic(&quot;out of memory&quot;)
     }
-    // ... copy bytes ...
+    for i in 0 as usize..s.len {
+        raw.ptr[i] = s.ptr[i]
+    }
     return raw
 }</code></pre>
-<p>Provide a context with <code>with (mem.heap()) { ... }</code>, <code>context a = mem.heap()</code>, or <code>call(...) with (value)</code>. <code>main</code> starts with runtime defaults, so it can allocate without declaring contexts.</p>
-<h2>Generics, lambdas, coroutines</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn maxOf&lt;T: cmp.Ordered&gt;(a: T, b: T): T {
+<p>Provide a context with <code>with (mem.heap()) { ... }</code> or <code>call(...) with (value)</code>.</p>
+<h2>Generics and coroutines</h2>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.cmp
+
+fn maxOf&lt;T: cmp.Ordered&gt;(a: T, b: T): T {
     if a &gt; b { return a }
     return b
-}
-
-fn apply(x: i64, f: (i64) -&gt; i64): i64 = f(x)
-
-fn answer(): i64 {
-    var v: i64 = 0
-    scope {
-        val task = go with (mem.heap()) { 40 + 2 }
-        v = task.join()
-    }
-    return v
 }</code></pre>
+<p>Coroutines on v2 use <code>go(fn, arg)</code>, <code>yield()</code>, and <code>coro_drain()</code> (see compiler <code>examples/coro_yield.jog</code>). The older <code>scope</code> / <code>go { }</code> / <code>Chan</code> form is not yet on this tip.</p>
 <h2>Manifest</h2>
-<p>Minimal <code>jog.mod</code>:</p>
-<pre><code>module hello</code></pre>
-<p>Optional v2 lines include <code>version</code>, <code>kind executable|library</code>, <code>jog 0.0.1</code>, <code>require</code>, <code>export</code>, and <code>link</code>. See <a href="modules/">Modules</a>.</p>
+<pre><code>module hello
+root main.jog</code></pre>
+<p>Optional lines: <code>version</code>, <code>kind</code>, <code>jog 0.2.0</code>, <code>require</code>, <code>export</code>, <code>link</code>, directory <code>source</code>. See <a href="../modules/">Modules</a>.</p>
 <h2>Next</h2>
 <ul>
-<li><a href="language/">Language</a> — per-feature pages</li>
-<li><a href="std/">Std</a> — standard library overview</li>
-<li><a href="examples/">Examples</a></li>
+<li><a href="../language/">Language</a> — per-feature pages</li>
+<li><a href="../std/">Std</a> — standard library overview</li>
+<li><a href="../examples/">Examples</a></li>
 </ul>
       </article>
       <footer class="wiki-footer">

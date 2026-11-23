@@ -6,7 +6,7 @@ title: Tools
 
 Beside the Zig-hosted compiler `jog`, two companion projects help day-to-day work. Both track the v2 line.
 
-Set **`JOG`** to your `jog` binary (or put it on `PATH`). See [Getting started](getting-started/) and [Toolchain](toolchain/).
+Set **`JOG`** to your `jog` binary (or put it on `PATH`). See [Getting started](../getting-started/) and [Toolchain](../toolchain/).
 
 ## JogBuild
 
@@ -50,4 +50,4 @@ Settings: `jog.serverPath` for the server binary; `jog.compilerPath` (or `JOG`) 
 | JogBuild | Dependency / pack / invoke | Local deps and archives |
 | JogLSP | Editor language server | Diags, symbols, hover, definition, completion |
 
-See also [Toolchain](toolchain/) and [Links](links/).
+See also [Toolchain](../toolchain/) and [Links](../links/).

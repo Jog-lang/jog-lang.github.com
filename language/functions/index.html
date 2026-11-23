@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,62 +49,25 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Functions</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Functions</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>Ordinary functions, expression bodies, multiple returns, lambdas, trailing lambdas, named/default arguments, <code>if</code> / <code>when</code> as expressions.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn divmod(a: i64, b: i64): (i64, i64) {
-    return a / b, a % b
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn add(a: i32, b: i32): i32 {
+    return a + b
 }
 
 fn square(x: i64): i64 = x * x
 
-fn connect(host: str, port: i64 = 80, retries: i64 = 3): i64 =
-    port + retries
-
-fn apply(x: i64, f: (i64) -&gt; i64): i64 = f(x)
-
-fn lambdas(): i64 {
-    val double = (x: i64) -&gt; { x * 2 }
-    var sum: i64 = 0
-    repeat(3) { i -&gt; sum += i }
-    repeat(2) { sum += it }
-    return apply(5, double) + sum
+fn divmod(a: i64, b: i64): (i64, i64) {
+    return a / b, a % b
 }</code></pre>
-<h2><code>when</code> and patterns</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn httpKind(code: i64): str {
-    return when code {
-        200, 204 -&gt; &quot;ok&quot;
-        in 300..400 -&gt; &quot;redirect&quot;
-        404 -&gt; &quot;missing&quot;
-        else -&gt; &quot;error&quot;
-    }
-}</code></pre>
-<p>First match wins. Enum <code>when</code> must be exhaustive or have <code>else</code>. Payload fields bind by position or by name; <code>_</code> skips one. <code>when</code> on a <code>T?</code> uses <code>Some</code> / <code>None</code> (and <code>null</code> as another spelling of <code>None</code>). A subject that is not an enum needs <code>else</code> when the <code>when</code> is used as a value.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">enum Kind { Ok, Err(code: i64) }
-
-fn label(k: Kind): str {
-    return when k {
-        Ok -&gt; &quot;ok&quot;
-        Err(code) -&gt; &quot;err&quot;
-    }
-}</code></pre>
-<h2>Pack parameters</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn sum(...i64: xs): i64 {
-    var total: i64 = 0
-    for i in 0 as usize..xs.len {
-        total += xs[i]
-    }
-    return total
-}</code></pre>
-<p>The pack is a <code>[]T</code> in the body and <strong>must be the last parameter</strong> (pack-last-param). Fixed parameters come first; a parameter after the pack is an error.</p>
-<h2>V1 notes</h2>
+<p>Packs: <code>fn sum(...i64: xs): i64</code>.</p>
+<h2>Not yet on v2</h2>
 <ul>
-<li>Non-escaping function parameters may capture locals by reference.</li>
-<li><code>escaping</code> function values are not ready yet.</li>
-<li>Operator methods (<code>fn T.op+</code>) parse, but user operators often do not apply yet — see <a href="generics/">generics</a>.</li>
+<li>Lambdas / function values / trailing lambdas</li>
+<li>Default and some named-argument forms</li>
+<li><code>if</code> / <code>when</code> as arbitrary expressions in all positions</li>
 </ul>
       </article>
       <footer class="wiki-footer">
