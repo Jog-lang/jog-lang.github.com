@@ -21,4 +21,4 @@ fn block(): usize {
 
 Spec helpers like free-standing `new` / `alloc` sugar are not all present — call allocator methods.
 
-**Caveat:** `defer` has been observed to segfault in some programs on this tip; prefer explicit frees in hot smoke paths until Friction closes.
+**Caveat:** `defer` has been observed to segfault in some programs on this tip; prefer explicit frees in hot smoke paths until this tip stabilizes.

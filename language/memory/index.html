@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,38 +49,23 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Memory</h1>
-        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Memory</h1>
-<p><strong>Status:</strong> partial</p>
-<p>No GC. Explicit allocation through an <code>Allocator</code> context. Pointers and slices as in C-family languages, with checked slices for everyday work.</p>
-<h2>Pointers</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">var x: i32 = 5
-val p: *i32 = &amp;x
-*p = 6</code></pre>
-<p><code>*T</code> is never null; <code>*T?</code> may be. Field access and method calls auto-dereference. Pointer arithmetic and <code>p[i]</code> are unchecked (like C). Prefer slices for bounds-checked access.</p>
-<h2>Allocators</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">interface Allocator {
-    fn alloc(size: usize, align: usize): (bytes, error?)
-    fn resize(b: bytes, size: usize): (bytes, error?)
-    fn free(b: bytes)
+<p>Manual allocation through <code>mem.Allocator</code>. Containers take the allocator as a context on allocating methods.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
+
+fn block(): usize {
+    with (mem.heap()) {
+        val (b, err) = mem.heap().alloc(16, 8)
+        if err != null { return 0 }
+        defer mem.heap().free(b)
+        return b.len
+    }
 }</code></pre>
-<ul>
-<li><code>mem.heap()</code> — malloc-backed general allocator (std panics on OOM rather than returning an error).</li>
-<li><code>std.arena</code> — bump allocator; <code>free</code> is a no-op; <code>release</code> drops everything.</li>
-<li>Containers take the allocator as a context on allocating methods (<code>push</code>, <code>free</code>), never as a stored field.</li>
-</ul>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">with (mem.heap()) {
-    val (buf, err) = a.alloc(size(T), align(T))
-    // ...
-}</code></pre>
-<h2>V1 notes</h2>
-<ul>
-<li>Spec helpers such as <code>new</code>, <code>tryAlloc</code>, <code>dup</code>, <code>delete</code> are not in std yet — call <code>alloc</code> / <code>free</code> on the allocator.</li>
-<li>To free an allocated <code>str</code>, rebuild a <code>bytes</code> header or use <code>fs.free_str</code>.</li>
-<li><code>@unchecked { }</code> disables bounds checks for a block; overflow checks stay on in all build modes.</li>
-</ul>
+<p>Spec helpers like free-standing <code>new</code> / <code>alloc</code> sugar are not all present — call allocator methods.</p>
+<p><strong>Caveat:</strong> <code>defer</code> has been observed to segfault in some programs on this tip; prefer explicit frees in hot smoke paths until this tip stabilizes.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

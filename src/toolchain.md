@@ -49,4 +49,4 @@ Text on stderr: `file:line:column: severity: message`.
 
 ## Building from source
 
-See [Getting started](getting-started/). Branches: [Links](links/).
+See [Getting started](../getting-started/). Branches: [Links](../links/).

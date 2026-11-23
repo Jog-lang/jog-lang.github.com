@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,34 +49,19 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">C interop</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>C interop</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>Call C through <code>extern</code> blocks in Jog syntax. Types and helpers live in <code>std.c</code>.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.c
+<pre data-lang="jog" class="language-jog"><code class="language-jog">type c_int = i32
+type c_char = i8
 
 extern {
-    fn abs(n: c.int): c.int
-    fn atoi(s: *const c.char): c.int
+    fn abs(n: c_int): c_int
 }
 
-fn cAbs(n: i32): i32 = abs(n)
-
-fn cParse(): i32 = atoi(c&quot;1234&quot;)
-
-fn cLen(): usize = c.strlen(c&quot;hello&quot;)</code></pre>
-<ul>
-<li><code>c&quot;...&quot;</code> is a NUL-terminated <code>*const c.char</code>.</li>
-<li><code>@link(&quot;name&quot;)</code> on an <code>extern</code> block (or <code>link</code> lines in <code>jog.mod</code>) passes libraries to the linker.</li>
-<li><code>private extern { }</code> keeps bindings package-private.</li>
-<li>C variadics: <code>...</code> on an <code>extern</code> function.</li>
-<li>Nullable C pointers: <code>*T?</code>. Untyped: <code>*void</code> / <code>*void?</code>.</li>
-<li>Function pointer types: <code>extern (c.int) -&gt; c.int</code>.</li>
-<li><code>@opaque struct</code>, <code>@union struct</code>, and <code>@export fn</code> (callable from C) are part of the surface; <code>@export</code> is accepted in V1.</li>
-</ul>
-<p><code>std.c</code> aliases match the Windows x64 (LLP64) host (<code>c.int</code> = <code>i32</code>, <code>c.long</code> = <code>i32</code>, <code>c.size_t</code> = <code>usize</code>, and so on).</p>
+fn cAbs(n: i32): i32 = abs(n)</code></pre>
+<p><code>std.c</code> has shared aliases and libc/runtime bindings when imports resolve. <code>@link(&quot;lib&quot;)</code> and <code>jog.mod</code> <code>link.*</code> / <code>libdir.*</code> feed the linker.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -50,19 +55,24 @@
         <h1>Modules</h1>
 <h2>Packages and modules</h2>
 <ul>
-<li>A <strong>package</strong> is one folder of <code>.jog</code> files. It is the unit of namespacing and imports. Files in the same folder share declarations without imports.</li>
-<li>A <strong>module</strong> is a project: a tree of packages with one <code>jog.mod</code> at the root. It is the unit of versioning, dependencies, and distribution.</li>
-<li>Import paths are dot-separated from the module root: <code>import net.http</code>, <code>import std.list as lists</code>. The first segment is <code>std</code>, a required module name, or a local folder. Circular imports are errors.</li>
+<li>A <strong>package</strong> is one folder of <code>.jog</code> files (or the module root’s listed sources). It is the unit of namespacing and imports.</li>
+<li>A <strong>module</strong> is a project: a tree of packages with one <code>jog.mod</code> at the root.</li>
+<li>Import paths are dot-separated: <code>import std.list</code>, <code>import std.mem as m</code> (when aliases bind). Circular imports are errors.</li>
 </ul>
-<p>The entry point is <code>fn main()</code> in the <strong>root package</strong> (the folder that contains <code>jog.mod</code>). <code>*.test.jog</code> files belong to their folder’s package and load only under <code>jog test</code>.</p>
+<p>The entry point is <code>fn main()</code> in the <strong>root package</strong>. <code>*.test.jog</code> files load only under <code>jog test</code>.</p>
 <h2><code>jog.mod</code></h2>
-<p>Line-based; <code>#</code> comments. Minimal:</p>
-<pre><code>module hello</code></pre>
-<p>v2 (every V1 file is valid v2):</p>
+<p>Line-based; <code>#</code> comments. Prefer an explicit root on the Zig tip:</p>
+<pre><code>module hello
+root main.jog</code></pre>
+<p>Richer example:</p>
 <pre><code>module quickref
 version 0.1.0
 kind executable
-jog 0.0.1</code></pre>
+jog 0.2.0
+targets windows linux macos
+root main.jog
+source basics.jog
+source types.jog</code></pre>
 <table>
 <thead><tr>
 <th>Directive</th>
@@ -73,12 +83,20 @@ jog 0.0.1</code></pre>
 <td>Required, first; identifier, not <code>std</code></td>
 </tr>
 <tr>
+<td><code>root &lt;file&gt;</code></td>
+<td>Entry / primary source file</td>
+</tr>
+<tr>
+<td><code>source &lt;file-or-dir&gt;</code></td>
+<td>Extra sources or a package directory tree</td>
+</tr>
+<tr>
 <td><code>version &lt;semver&gt;</code></td>
 <td>Default <code>0.0.0</code></td>
 </tr>
 <tr>
 <td><code>kind executable</code> / <code>kind library</code></td>
-<td>Default executable; libraries have no <code>main</code></td>
+<td>Default executable</td>
 </tr>
 <tr>
 <td><code>jog &lt;semver&gt;</code></td>
@@ -90,24 +108,27 @@ jog 0.0.1</code></pre>
 </tr>
 <tr>
 <td><code>export &lt;package path&gt;</code></td>
-<td>Library only; omit to export every package</td>
+<td>Library only</td>
 </tr>
 <tr>
-<td><code>link &lt;lib&gt;</code>, <code>link.windows &lt;lib&gt;</code></td>
-<td>C libraries</td>
+<td><code>link</code> / <code>libdir</code> (+ <code>.linux</code> / <code>.windows</code> / …)</td>
+<td>Native libraries</td>
+</tr>
+<tr>
+<td><code>targets &lt;os&gt;...</code></td>
+<td><code>expect</code>/<code>actual</code> coverage</td>
 </tr>
 </tbody></table>
-<p>The compiler never follows <code>require</code> paths by itself. Pass <code>--module name=dir</code> (or use <a href="tools/">JogBuild</a>) for each dependency.</p>
+<p>A bare <code>module name</code> with no <code>root</code>/<code>source</code> defaults to <code>{name}.jog</code>.</p>
+<p>The compiler never follows <code>require</code> paths by itself. Pass <code>--module name=dir</code> (or use <a href="../tools/">JogBuild</a>) for each dependency.</p>
 <h2><code>.jogz</code></h2>
-<p>A distributed library is a <code>.jogz</code>: a zip archive with a fixed layout carrying the module source (and later, optionally, objects). JogBuild unpacks archives into a cache and points <code>jog</code> at source folders. The compiler only reads folders.</p>
+<p>A distributed library is a <code>.jogz</code> zip of module source. JogBuild unpacks archives into a cache and points <code>jog</code> at source folders. The compiler only reads folders.</p>
 <h2>Layout sketch</h2>
 <pre><code>myapp/
   jog.mod
   main.jog
   util.jog
   main.test.jog
-  net/
-    http.jog
   out/          # git-ignore</code></pre>
       </article>
       <footer class="wiki-footer">

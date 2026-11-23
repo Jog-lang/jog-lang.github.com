@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,60 +49,19 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Errors</h1>
-        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Errors</h1>
-<p><strong>Status:</strong> partial</p>
-<p>Errors are values. Fallible functions return <code>error?</code> last. There is no <code>try</code>; propagate explicitly. <code>defer</code> / <code>errdefer</code> for cleanup. Panics abort.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">struct NotFound {
-    tag: u8
-}
-
-fn NotFound.message(): str = &quot;not found&quot;
-
-var notFound: NotFound
-val ErrNotFound = &amp;notFound
-
-fn lookup(key: str): (i64, error?) {
-    if key == &quot;answer&quot; {
-        return 42, null
+<p>Design: fallible functions return <code>error?</code> as the last result; sentinels in <code>std.error</code> compare by identity.</p>
+<p><strong>On the Zig tip today:</strong> top-level <code>val ErrX = &amp;global</code> does not lower, so importing <code>std.error</code> / <code>std.io</code> is unreliable. Guide demos use <code>(T, bool)</code> until that lands.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn lookup(key: i64): (i64, bool) {
+    if key == 1 {
+        return 42, true
     }
-    return 0, ErrNotFound
-}
-
-fn twice(key: str): (i64, error?) {
-    val (v, err) = lookup(key)
-    if err != null {
-        return 0, err
-    }
-    return v * 2, null
+    return 0, false
 }</code></pre>
-<p><code>error</code> is a universe interface with <code>message(): str</code>. Sentinels are usually global pointers compared by identity.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn build(fail: bool): (bytes, error?) with (a: mem.Allocator) {
-    val (buf, err) = a.alloc(16, 1)
-    if err != null {
-        return bytes(), err
-    }
-    errdefer {
-        a.free(buf)
-    }
-    if fail {
-        return bytes(), ErrNotFound
-    }
-    return buf, null
-}</code></pre>
-<ul>
-<li><code>defer</code> runs when the <strong>enclosing block</strong> exits (LIFO).</li>
-<li><code>errdefer</code> runs only when the function returns a non-null last <code>error?</code>.</li>
-<li><code>panic(&quot;msg&quot;)</code> aborts immediately; pending <code>defer</code>s do not run.</li>
-</ul>
-<h2>V1 notes</h2>
-<ul>
-<li><code>err!!.message()</code> is not usable yet (<code>error</code> methods are not checked).</li>
-<li>Compare against sentinel pointers (<code>err == ErrNotFound</code>).</li>
-<li><code>errorScope</code>, <code>errorf</code>, and <code>unreachable()</code> are not available; <code>ErrCancelled</code> and <code>ErrClosed</code> are predeclared.</li>
-</ul>
+<p>There is no <code>try</code> / <code>?</code> propagation sugar on this tip.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

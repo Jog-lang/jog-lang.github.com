@@ -36,6 +36,11 @@
 <li class="nav-item is-active"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -48,12 +53,12 @@
       </header>
       <article class="wiki-content">
         <h1>Std</h1>
-<p>The standard library ships with the compiler (<code>../std</code> next to the <code>jog</code> binary, or <code>$JOG_ROOT/std</code>). Import as <code>import std.&lt;package&gt;</code>; refer by last segment (<code>io.println</code>) or alias.</p>
-<h2>Conventions (V1)</h2>
+<p>The standard library ships with the compiler (<code>../std</code> next to the <code>jog</code> binary, or <code>$JOG_ROOT/std</code>). Confirm with <code>jog roots</code>. Import as <code>import std.&lt;package&gt;</code>; refer by last segment (<code>mem.heap</code>) or alias when supported.</p>
+<h2>Conventions</h2>
 <ul>
 <li><strong>Allocation is a context.</strong> Methods that allocate declare <code>with (a: mem.Allocator)</code>. Containers do not store an allocator.</li>
-<li><strong>Out of memory</strong> in std allocators typically <strong>panics</strong> rather than returning an error.</li>
-<li>Some I/O failures use <code>(T, bool)</code> instead of <code>error?</code>.</li>
+<li><strong>Out of memory</strong> in std allocators typically <strong>panics</strong>.</li>
+<li>Builtin <strong><code>print</code></strong> is available without importing <code>std.io</code>.</li>
 <li>Programmer errors (bad index, pop on empty) panic.</li>
 </ul>
 <h2>Packages</h2>
@@ -61,123 +66,115 @@
 <thead><tr>
 <th>Package</th>
 <th>Role</th>
+<th>Notes on v2 tip</th>
 </tr></thead><tbody>
 <tr>
 <td><code>std.c</code></td>
-<td>C type aliases, libc / runtime bindings</td>
+<td>C aliases, libc / runtime bindings</td>
+<td>Used by other packages</td>
 </tr>
 <tr>
 <td><code>std.cmp</code></td>
-<td><code>Ordered</code>, <code>Comparable</code>, numeric type sets</td>
+<td><code>Ordered</code>, <code>Comparable</code>, numeric sets</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.io</code></td>
-<td><code>print</code> / <code>println</code>, <code>eprint</code>, file <code>read_all</code> / <code>write_all</code>, <code>Logger</code></td>
+<td><code>print</code> / files / logger</td>
+<td><strong>Import currently broken</strong> — use builtin <code>print</code></td>
 </tr>
 <tr>
 <td><code>std.mem</code></td>
-<td><code>Allocator</code>, <code>heap()</code>, error arena</td>
+<td><code>Allocator</code>, <code>heap()</code></td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.testing</code></td>
-<td><code>Testing</code> for <code>@test</code> (<code>expect</code>, <code>expectEq</code>, <code>expectPanic</code>, …)</td>
+<td><code>@test</code> helpers</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.list</code></td>
-<td>Growable <code>List&lt;T&gt;</code></td>
+<td><code>List&lt;T&gt;</code></td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.map</code></td>
-<td><code>Map&lt;K, V&gt;</code> (caller supplies hash; <code>fnv1a</code> for <code>str</code>)</td>
+<td><code>Map&lt;K, V&gt;</code> (+ <code>fnv1a</code>)</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.strbuilder</code></td>
 <td>Growable text buffer</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.arena</code></td>
-<td>Bump <code>Arena</code> implementing <code>Allocator</code></td>
+<td>Bump <code>Arena</code></td>
+<td>Parse/import gaps possible</td>
 </tr>
 <tr>
 <td><code>std.fs</code></td>
-<td>Files, join, directory list (Windows-focused in V1)</td>
+<td>Files, join, list</td>
+<td>Host-dependent</td>
+</tr>
+<tr>
+<td><code>std.conv</code></td>
+<td>Parse/format integers &amp; floats, hex</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.os</code></td>
-<td><code>argc</code> / <code>argv</code>, <code>env</code></td>
+<td>args, env, pid, hostname, …</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>std.json</code></td>
+<td><code>Value</code> tree parse/stringify</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.proc</code></td>
-<td>Run a child and capture output (Windows-focused in V1)</td>
+<td>Run child, capture output</td>
+<td>Host-dependent</td>
 </tr>
 <tr>
 <td><code>std.math</code></td>
-<td><code>floor</code>, <code>ceil</code>, <code>log2</code>, <code>exp2</code> via libm</td>
+<td>libm + helpers</td>
+<td>OK</td>
 </tr>
 <tr>
 <td><code>std.text</code></td>
-<td><code>str</code> views and helpers: <code>slice</code>, <code>starts_with</code>, <code>trim</code>, <code>parse_u64_dec</code>, <code>clone</code>, <code>split</code>, <code>runes</code>, …</td>
-</tr>
-</tbody></table>
-<h2><code>std.text</code></h2>
-<p>Import <code>std.text</code> for string views and owned copies. Most helpers allocate nothing. <code>clone</code>, case maps, <code>replace</code>, and <code>runes</code> need an <code>Allocator</code> context.</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.text as texts
-
-fn digits(s: str): (u64, bool) {
-    return texts.parse_u64_dec(s.trim())
-}</code></pre>
-<table>
-<thead><tr>
-<th>API</th>
-<th>Role</th>
-</tr></thead><tbody>
-<tr>
-<td><code>slice</code> / <code>starts_with</code> / <code>ends_with</code> / <code>index_of</code> / <code>contains</code></td>
-<td>Views and search (empty needle matches at the start)</td>
-</tr>
-<tr>
-<td><code>trim</code> / <code>trim_start</code> / <code>trim_end</code></td>
-<td>Strip ASCII space, tab, CR, LF</td>
-</tr>
-<tr>
-<td><code>is_digit</code> / <code>is_hex_digit</code> / <code>parse_u64_dec</code></td>
-<td>ASCII classification and unsigned decimal parse (no overflow check)</td>
-</tr>
-<tr>
-<td><code>clone</code> / <code>to_lower</code> / <code>to_upper</code> / <code>replace</code></td>
-<td>Owned copies</td>
-</tr>
-<tr>
-<td><code>split</code> / <code>count</code></td>
-<td>Split views; non-overlapping match count</td>
-</tr>
-<tr>
-<td><code>rune_iter</code> / <code>runes</code></td>
-<td>UTF-8 code points (ill-formed bytes → U+FFFD)</td>
+<td><code>str</code> views / owned helpers</td>
+<td>OK</td>
 </tr>
 </tbody></table>
 <h2>Quick examples</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io
-import std.mem
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn main() {
+    print(&quot;hi\n&quot;)
+}</code></pre>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.mem
 import std.list
 
-fn main() {
-    io.println(&quot;hi&quot;)
+fn demo(): i64 {
+    var total: i64 = 0
     with (mem.heap()) {
         var xs: list.List&lt;i64&gt;
         xs.push(1, 2, 3)
         defer xs.free()
-        io.println(&quot;ok&quot;)
+        for i in 0 as usize..xs.len {
+            total += xs.get(i)
+        }
     }
+    return total
 }</code></pre>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.testing
 
 @test
 fn smoke() with (t: testing.Testing) {
     t.expect(2 + 2 == 4)
-    t.expectEq(&quot;a&quot;, &quot;a&quot;)
 }</code></pre>
-<p>For API detail, read the <code>.jog</code> sources under the compiler’s <code>std/</code> tree. See also <a href="language/memory/">Memory</a> and <a href="language/contexts/">Contexts</a>.</p>
+<p>For API detail, read the <code>.jog</code> sources under the compiler’s <code>std/</code> tree. See also <a href="../language/memory/">Memory</a> and <a href="../language/contexts/">Contexts</a>.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

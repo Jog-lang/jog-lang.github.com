@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../links/index.html">Links</a></li>
 </ul>
@@ -48,73 +53,38 @@
       </header>
       <article class="wiki-content">
         <h1>Getting started</h1>
-<p>Jog is at early preview (<code>jog 0.0.1</code>). The <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> repository has two long-lived branches:</p>
-<table>
-<thead><tr>
-<th>Branch</th>
-<th>Binary</th>
-<th>Role</th>
-</tr></thead><tbody>
-<tr>
-<td><code>seed</code></td>
-<td><code>jog</code></td>
-<td>C stage-0 compiler</td>
-</tr>
-<tr>
-<td><code>develop</code></td>
-<td><code>jogc</code></td>
-<td>Jog self-hosted compiler (needs an external <code>jog</code>)</td>
-</tr>
-</tbody></table>
-<p>Build <code>jog</code> first, then use that binary to build <code>jogc</code>.</p>
+<p>Jog’s product compiler is Zig-hosted <strong><code>jog</code></strong> (<code>jog</code> 0.2.x-v2) on <a href="https://github.com/Jog-lang/JogCompiler">JogCompiler</a> branch <strong><code>develop</code></strong> (alias <strong><code>v2</code></strong>). Branches <code>seed</code> (C stage-0) and <code>develop-jogc</code> (pre-cut self-hosted Jog) are archives only.</p>
 <h2>Prerequisites</h2>
 <ul>
-<li>Windows x86-64 or Linux x86-64 (aarch64 is not supported yet)</li>
-<li>For <code>seed</code>: CMake, Ninja, and a C toolchain (<strong>gcc</strong> and <strong>clang</strong> on <code>PATH</code>)</li>
-<li>For <code>develop</code>: a working <code>jog</code> binary (from <code>seed</code>) and a C linker toolchain for the emitted C</li>
+<li>Linux x86-64 or Windows x86-64</li>
+<li><a href="https://ziglang.org/">Zig</a> (see the compiler repo’s <code>build.zig.zon</code> for the pinned version)</li>
+<li>For wasm: <a href="https://emscripten.org/">emsdk</a> (<code>emcc</code> on <code>PATH</code>)</li>
 </ul>
-<h2>Build <code>jog</code> (<code>seed</code>)</h2>
-<p>Clone JogCompiler and check out <strong><code>seed</code></strong>:</p>
+<h2>Build <code>jog</code></h2>
 <pre><code>git clone https://github.com/Jog-lang/JogCompiler.git
 cd JogCompiler
-git checkout seed</code></pre>
-<p><strong>Windows</strong></p>
-<pre><code>cmake -S . -B build -G Ninja
-cmake --build build --target jog</code></pre>
-<p>The binary is <code>build/jog.exe</code>. Optionally run the full gate: <code>pwsh scripts/check.ps1</code> (prints <code>check: OK</code>).</p>
-<p><strong>Linux</strong></p>
-<pre><code>cmake -S . -B build-linux -G Ninja
-cmake --build build-linux --target jog</code></pre>
-<p>The binary is <code>build-linux/jog</code>. Optionally: <code>scripts/check.sh</code>.</p>
-<p>Put that binary on your <code>PATH</code>, or set <code>JOG</code> to its full path (JogBuild, JogLSP, and a <code>develop</code> checkout honor <code>JOG</code>). Std ships next to the compiler (<code>../std</code> from the binary’s folder), or set <code>JOG_ROOT</code> to the folder that contains <code>std/</code> and <code>runtime/</code>.</p>
-<p>Confirm:</p>
-<pre><code>jog version</code></pre>
-<p>You should see <code>jog 0.0.1</code>.</p>
-<h2>Build <code>jogc</code> (<code>develop</code>)</h2>
-<p>Check out <strong><code>develop</code></strong> (same clone, or a second worktree). This branch has no CMake seed tree — stage 0 is always an external <code>jog</code>.</p>
-<pre><code>git checkout develop
-export JOG=/path/to/seed/build-linux/jog   # Windows: path to build/jog.exe
-&quot;$JOG&quot; build -o out/jogc
-./out/jogc version</code></pre>
-<p>On Windows the output is typically <code>out/jogc.exe</code>. <code>JOG</code> must be set, or <code>jog</code> must be on <code>PATH</code>.</p>
-<p>Day-to-day work can use either binary. For shipping modules and for tools that spawn a compiler, point <code>JOG</code> at the one you intend to run; see <a href="toolchain/">Toolchain</a> and <a href="tools/">Tools</a>.</p>
+git checkout develop
+zig build
+./zig-out/bin/jog version
+./zig-out/bin/jog roots</code></pre>
+<p>Put <code>./zig-out/bin/jog</code> on your <code>PATH</code>, or set <code>JOG</code> to its full path. Std and core must be discoverable: either leave them next to the binary layout, or set <code>JOG_ROOT</code> to the checkout (the folder that contains <code>std/</code> and <code>core/</code>). Confirm with <code>jog roots</code>.</p>
+<p>You should see a line like <code>jog 0.2.12-v2 (zig host, …)</code>.</p>
 <h2>Hello module</h2>
-<p>Create a folder with a manifest and a main file:</p>
 <p><code>jog.mod</code></p>
-<pre><code>module hello</code></pre>
+<pre><code>module hello
+root main.jog</code></pre>
 <p><code>main.jog</code></p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">import std.io
-
-fn main() {
-    io.println(&quot;Hello from Jog!&quot;)
+<pre data-lang="jog" class="language-jog"><code class="language-jog">fn main() {
+    print(&quot;Hello from Jog!\n&quot;)
 }</code></pre>
 <p>From that folder:</p>
-<pre><code>jog check
-jog run
-jog build -o out/hello</code></pre>
-<p><code>jog run</code> builds in debug mode and runs the program. <code>jog build</code> writes an executable under <code>out/</code> (or the <code>-o</code> path). Add <code>out/</code> to <code>.gitignore</code>. The same commands work with <code>jogc</code> once you have built it.</p>
-<p>You can also try the compiler’s own example after a seed build:</p>
-<pre><code>jog run examples/hello</code></pre>
+<pre><code>jog check .
+jog build . -o out/hello
+./out/hello</code></pre>
+<p>Builtin <code>print</code> writes bytes (add your own newline). <code>import std.io</code> is not reliable on this tip yet — see <a href="../std/">Std</a>. Add <code>out/</code> to <code>.gitignore</code>.</p>
+<p>Try a compiler example after the build:</p>
+<pre><code>jog build examples/hello.jog -o out/hello
+./out/hello</code></pre>
 <h2>Tests</h2>
 <p>Put tests in <code>*.test.jog</code> next to the code (same package). Mark functions with <code>@test</code>:</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">import std.testing
@@ -123,16 +93,16 @@ jog build -o out/hello</code></pre>
 fn adds() with (t: testing.Testing) {
     t.expect(1 + 1 == 2)
 }</code></pre>
-<pre><code>jog test</code></pre>
-<p><code>jog check</code> / <code>jogc check</code> only typecheck and stop before lowering; confirm with <code>test</code> or <code>build</code> when you care about IR, C emit, and linking.</p>
+<pre><code>jog test .</code></pre>
+<p><code>jog check</code> only typechecks and stops before lowering; confirm with <code>test</code> or <code>build</code> when you care about codegen and linking.</p>
 <h2>Editor (optional)</h2>
-<p><a href="https://github.com/Jog-lang/JogLSP">JogLSP</a> provides the VS Code / Cursor extension: highlighting plus diagnostics on open/change/save, document symbols, hover, go to definition, and completion. The language server is built against JogCompiler <strong><code>develop</code></strong> (<code>require jogc</code> / in-process frontend). You still set <code>JOG</code> (or <code>jog.compilerPath</code>) to a seed <code>jog</code> for tooling such as <code>jog-build</code>. Build and install steps are on <a href="tools/">Tools</a>.</p>
+<p><a href="https://github.com/Jog-lang/JogLSP">JogLSP</a> is a Zig language server for the v2 compiler: diagnostics via <code>jog check --diag=json</code>, symbols, hover, definition, completion. Set <code>JOG</code> (or <code>jog.compilerPath</code>) to your <code>jog</code> binary. Build steps: <a href="../tools/">Tools</a>.</p>
 <h2>Next</h2>
 <ul>
-<li><a href="tour/">Tour</a> — language overview</li>
-<li><a href="toolchain/">Toolchain</a> — commands, flags, layout</li>
-<li><a href="tools/">Tools</a> — JogBuild and JogLSP</li>
-<li><a href="examples/">Examples</a></li>
+<li><a href="../tour/">Tour</a> — language overview</li>
+<li><a href="../toolchain/">Toolchain</a> — commands, flags, layout</li>
+<li><a href="../tools/">Tools</a> — JogBuild and JogLSP</li>
+<li><a href="../examples/">Examples</a></li>
 </ul>
       </article>
       <footer class="wiki-footer">

@@ -4,7 +4,7 @@ title: Tour
 
 # Tour
 
-A short walkthrough of what **jog 0.2.x-v2** accepts today. For design depth and open gaps, see [Language](language/).
+A short walkthrough of what **jog 0.2.x-v2** accepts today. For design depth and open gaps, see [Language](../language/).
 
 ## At a glance
 
@@ -12,7 +12,7 @@ A short walkthrough of what **jog 0.2.x-v2** accepts today. For design depth and
 - Types after names. Declarations start with a keyword. Everything is **public by default**; `private` narrows it.
 - Numbers never convert implicitly — every conversion is `as`. Integer overflow panics.
 - Allocation goes through an `Allocator` passed as a **context**.
-- Prefer builtin `print` for hello-world; std packages that import cleanly include `mem`, `list`, `testing`, and others listed on [Std](std/).
+- Prefer builtin `print` for hello-world; std packages that import cleanly include `mem`, `list`, `testing`, and others listed on [Std](../std/).
 
 ## Lexical basics
 
@@ -132,10 +132,10 @@ module hello
 root main.jog
 ```
 
-Optional lines: `version`, `kind`, `jog 0.2.0`, `require`, `export`, `link`, directory `source`. See [Modules](modules/).
+Optional lines: `version`, `kind`, `jog 0.2.0`, `require`, `export`, `link`, directory `source`. See [Modules](../modules/).
 
 ## Next
 
-- [Language](language/) — per-feature pages
-- [Std](std/) — standard library overview
-- [Examples](examples/)
+- [Language](../language/) — per-feature pages
+- [Std](../std/) — standard library overview
+- [Examples](../examples/)

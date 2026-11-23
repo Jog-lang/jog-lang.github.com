@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,42 +49,16 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Interfaces</h1>
-        <p class="status-row"><span class="badge badge-works-in-v1">works in V1</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Interfaces</h1>
-<p><strong>Status:</strong> works in V1</p>
-<p>Structural: a type satisfies an interface when it has the required methods (in its own package, not via extensions) and matching property fields.</p>
+<p>Structural interfaces: a value matches if it has the required methods (and fields when specified).</p>
 <pre data-lang="jog" class="language-jog"><code class="language-jog">interface Named {
-    val name: str
     fn greet(): str
-}
-
-struct Dog {
-    name: str
-}
-
-fn Dog.greet(): str = &quot;woof&quot;
-
-fn nameOf(n: Named): str = n.name</code></pre>
-<p>An interface value is a fat pointer built from a pointer: <code>val n: Named = &amp;dog</code>.</p>
-<p>Type tests:</p>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">fn kind(s: HasArea): str {
-    return when s {
-        is Square -&gt; &quot;square&quot;
-        is Circle -&gt; &quot;circle&quot;
-        else -&gt; &quot;other&quot;
-    }
-}
-
-fn squareSide(s: HasArea): i64 {
-    val sq = s as? *Square
-    if sq == null {
-        return -1
-    }
-    return sq!!.side
 }</code></pre>
-<p>Interface methods may declare contexts; implementations must match.</p>
+<h2>Caveats on v2</h2>
+<p>Interface methods that return <code>str</code> have been observed to segfault in some harnesses — keep smoke tests thin and prefer integer-returning methods until this tip stabilizes.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

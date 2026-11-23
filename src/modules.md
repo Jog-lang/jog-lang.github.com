@@ -49,7 +49,7 @@ source types.jog
 
 A bare `module name` with no `root`/`source` defaults to `{name}.jog`.
 
-The compiler never follows `require` paths by itself. Pass `--module name=dir` (or use [JogBuild](tools/)) for each dependency.
+The compiler never follows `require` paths by itself. Pass `--module name=dir` (or use [JogBuild](../tools/)) for each dependency.
 
 ## `.jogz`
 

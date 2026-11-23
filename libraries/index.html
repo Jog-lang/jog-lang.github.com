@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Libraries — Jog</title>
+  <link rel="stylesheet" href="../assets/wiki.css">
+</head>
+<body>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar">
+      <a class="wiki-brand" href="../index.html">Jog</a>
+      <p class="wiki-tagline">Language wiki · early preview</p>
+      <nav class="wiki-nav" aria-label="Wiki">
+<ul class="nav-list">
+<li class="nav-item"><a href="../index.html">Home</a></li>
+<li class="nav-item"><a href="../getting-started/index.html">Getting started</a></li>
+<li class="nav-item"><a href="../tour/index.html">Tour</a></li>
+<li class="nav-item"><a href="../language/index.html">Language</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../language/syntax/index.html">Syntax</a></li>
+<li class="nav-item"><a href="../language/types/index.html">Types</a></li>
+<li class="nav-item"><a href="../language/structs/index.html">Structs</a></li>
+<li class="nav-item"><a href="../language/interfaces/index.html">Interfaces</a></li>
+<li class="nav-item"><a href="../language/functions/index.html">Functions</a></li>
+<li class="nav-item"><a href="../language/generics/index.html">Generics</a></li>
+<li class="nav-item"><a href="../language/errors/index.html">Errors</a></li>
+<li class="nav-item"><a href="../language/contexts/index.html">Contexts</a></li>
+<li class="nav-item"><a href="../language/memory/index.html">Memory</a></li>
+<li class="nav-item"><a href="../language/coroutines/index.html">Coroutines</a></li>
+<li class="nav-item"><a href="../language/comptime/index.html">Comptime</a></li>
+<li class="nav-item"><a href="../language/platforms/index.html">Platforms</a></li>
+<li class="nav-item"><a href="../language/c-interop/index.html">C interop</a></li>
+</ul></li>
+<li class="nav-item"><a href="../modules/index.html">Modules</a></li>
+<li class="nav-item"><a href="../std/index.html">Std</a></li>
+<li class="nav-item"><a href="../toolchain/index.html">Toolchain</a></li>
+<li class="nav-item"><a href="../tools/index.html">Tools</a></li>
+<li class="nav-item is-active"><a href="../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../libraries/engine/index.html">Engine</a></li>
+</ul></li>
+<li class="nav-item"><a href="../examples/index.html">Examples</a></li>
+<li class="nav-item"><a href="../links/index.html">Links</a></li>
+</ul>
+</nav>
+    </aside>
+    <main class="wiki-main">
+      <header class="wiki-header">
+        <h1 class="wiki-title">Libraries</h1>
+        
+      </header>
+      <article class="wiki-content">
+        <h1>Libraries</h1>
+<p>A Jog <strong>library</strong> is a module with <code>kind library</code> in its <code>jog.mod</code>. Libraries have no <code>fn main()</code>. They export packages for other modules to import, and they ship as <strong><code>.jogz</code></strong> archives packed by <a href="../tools/">JogBuild</a>.</p>
+<h2>What you get</h2>
+<table>
+<thead><tr>
+<th>Piece</th>
+<th>Role</th>
+</tr></thead><tbody>
+<tr>
+<td><code>kind library</code></td>
+<td>Module shape: packages + <code>export</code> lines, no entry point</td>
+</tr>
+<tr>
+<td><code>.jogz</code></td>
+<td>Zip archive of the module source (and later, optionally, objects)</td>
+</tr>
+<tr>
+<td><code>require</code></td>
+<td>Dependency line in the consumer’s <code>jog.mod</code> (path to a folder or <code>.jogz</code>, or a cached version)</td>
+</tr>
+<tr>
+<td><code>--module name=dir</code></td>
+<td>How the compiler sees a required module — JogBuild supplies these flags</td>
+</tr>
+</tbody></table>
+<p>The compiler never opens a <code>.jogz</code> or follows a <code>require</code> path by itself. JogBuild unpacks archives into a cache and invokes <code>jog</code> with one <code>--module</code> mapping per module in the graph. See <a href="../modules/">Modules</a> and <a href="../tools/">Tools</a>.</p>
+<h2>Minimal consumer</h2>
+<pre><code>module my_app
+version 0.1.0
+kind executable
+require jog_sdl ../deps/jog_sdl-0.1.3.jogz</code></pre>
+<p>Then import exported packages by their module path, for example <code>import jog_sdl.sdl</code>.</p>
+<h2>Current libraries</h2>
+<ul>
+<li><a href="sdl/">SDL</a> — JogSDL: SDL3 bindings for Jog (<code>module jog_sdl</code>)</li>
+<li><a href="engine/">Engine</a> — JogEngine: systems-based 2D/3D engine (<code>module jog_engine</code>), consumes JogSDL via <code>.jogz</code></li>
+</ul>
+      </article>
+      <footer class="wiki-footer">
+        <p>Jog 0.0.1 · early preview</p>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/prism/prism.min.js"></script>
+  <script src="../assets/prism/components/prism-clike.min.js"></script>
+  <script src="../assets/prism/components/prism-c.min.js"></script>
+  <script src="../assets/prism/components/prism-bash.min.js"></script>
+  <script src="../assets/prism/components/prism-json.min.js"></script>
+  <script src="../assets/prism/components/prism-cmake.min.js"></script>
+  <script src="../assets/prism/components/prism-zig.min.js"></script>
+  <script src="../assets/prism/prism-jog.js"></script>
+</body>
+</html>

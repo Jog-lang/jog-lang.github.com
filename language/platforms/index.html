@@ -36,6 +36,11 @@
 <li class="nav-item"><a href="../../std/index.html">Std</a></li>
 <li class="nav-item"><a href="../../toolchain/index.html">Toolchain</a></li>
 <li class="nav-item"><a href="../../tools/index.html">Tools</a></li>
+<li class="nav-item"><a href="../../libraries/index.html">Libraries</a>
+<ul class="nav-children">
+<li class="nav-item"><a href="../../libraries/sdl/index.html">SDL</a></li>
+<li class="nav-item"><a href="../../libraries/engine/index.html">Engine</a></li>
+</ul></li>
 <li class="nav-item"><a href="../../examples/index.html">Examples</a></li>
 <li class="nav-item"><a href="../../links/index.html">Links</a></li>
 </ul>
@@ -44,31 +49,14 @@
     <main class="wiki-main">
       <header class="wiki-header">
         <h1 class="wiki-title">Platforms</h1>
-        <p class="status-row"><span class="badge badge-partial">partial</span></p>
+        
       </header>
       <article class="wiki-content">
         <h1>Platforms</h1>
-<p><strong>Status:</strong> partial</p>
-<p>Split OS-specific code with file suffixes and <code>expect</code> / <code>actual</code> function pairs.</p>
-<h2>File suffixes</h2>
-<p>A file named <code>&lt;name&gt;.&lt;os&gt;.jog</code> (or <code>*.test.jog</code>) loads only when <code>&lt;os&gt;</code> matches the build target: <code>windows</code>, <code>linux</code>, <code>macos</code>, <code>wasm</code>, or <code>posix</code> (linux or macos). The target is the host, or <code>wasm</code> for <code>--target wasm32</code>. Other dotted names (for example <code>a.b.jog</code>) always load.</p>
-<h2>expect / actual</h2>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">// platform.jog — core, no OS suffix
-expect fn platform_name(): str</code></pre>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">// platform.windows.jog
-actual fn platform_name(): str = &quot;windows&quot;</code></pre>
-<pre data-lang="jog" class="language-jog"><code class="language-jog">// platform.posix.jog — linux and macos
-actual fn platform_name(): str = &quot;posix&quot;</code></pre>
-<ul>
-<li><code>expect fn</code> has no body and lives in a core file.</li>
-<li><code>actual fn</code> supplies the body in an OS-suffixed file; do not put a visibility modifier on it.</li>
-<li>Signatures must match as written.</li>
-</ul>
-<h2>V1 notes</h2>
-<ul>
-<li>Coverage checks run for the current target (and reported targets when the toolchain accepts a <code>targets</code> line on <code>jog.mod</code>).</li>
-<li>Prefer testing platform splits with <code>jog test</code> on each OS you care about.</li>
-</ul>
+<p><code>expect fn</code> in a core file; <code>actual fn</code> in <code>*.windows.jog</code> / <code>*.linux.jog</code> / <code>*.macos.jog</code> / <code>*.posix.jog</code>.</p>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">expect fn platform_name(): str</code></pre>
+<pre data-lang="jog" class="language-jog"><code class="language-jog">actual fn platform_name(): str = &quot;posix&quot;</code></pre>
+<p><code>jog.mod</code> may list <code>targets windows linux macos</code> for coverage. Prefer comparing <code>.len</code> (or bytes) until <code>str ==</code> is solid.</p>
       </article>
       <footer class="wiki-footer">
         <p>Jog 0.0.1 · early preview</p>

@@ -69,4 +69,4 @@ fn smoke() with (t: testing.Testing) {
 }
 ```
 
-For API detail, read the `.jog` sources under the compiler’s `std/` tree. See also [Memory](language/memory/) and [Contexts](language/contexts/).
+For API detail, read the `.jog` sources under the compiler’s `std/` tree. See also [Memory](../language/memory/) and [Contexts](../language/contexts/).
