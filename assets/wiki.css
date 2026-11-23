@@ -304,6 +304,59 @@ a:hover {
   border-left: 3px solid var(--accent);
 }
 
+/* Prism token colors — custom palette for dark green code blocks (no stock theme) */
+.wiki-content pre code .token.comment,
+.wiki-content pre code .token.prolog,
+.wiki-content pre code .token.doctype,
+.wiki-content pre code .token.cdata {
+  color: #7a8a80;
+  font-style: italic;
+}
+
+.wiki-content pre code .token.keyword {
+  color: #7ec8a3;
+}
+
+.wiki-content pre code .token.string,
+.wiki-content pre code .token.char,
+.wiki-content pre code .token.attr-value {
+  color: #c4d6a0;
+}
+
+.wiki-content pre code .token.number,
+.wiki-content pre code .token.boolean,
+.wiki-content pre code .token.constant,
+.wiki-content pre code .token.null {
+  color: #d4b483;
+}
+
+.wiki-content pre code .token.function {
+  color: #9ec5e8;
+}
+
+.wiki-content pre code .token.class-name,
+.wiki-content pre code .token.builtin,
+.wiki-content pre code .token.important {
+  color: #8fc9b0;
+}
+
+.wiki-content pre code .token.operator,
+.wiki-content pre code .token.punctuation,
+.wiki-content pre code .token.entity {
+  color: #a8b5ad;
+}
+
+.wiki-content pre code .token.property,
+.wiki-content pre code .token.tag,
+.wiki-content pre code .token.symbol {
+  color: #e8ece9;
+}
+
+.wiki-content pre code .token.regex,
+.wiki-content pre code .token.variable {
+  color: #c9a0d6;
+}
+
 .wiki-content table {
   width: 100%;
   margin: 0 0 1.1rem;
