@@ -6,44 +6,54 @@ title: Modules
 
 ## Packages and modules
 
-- A **package** is one folder of `.jog` files. It is the unit of namespacing and imports. Files in the same folder share declarations without imports.
-- A **module** is a project: a tree of packages with one `jog.mod` at the root. It is the unit of versioning, dependencies, and distribution.
-- Import paths are dot-separated from the module root: `import net.http`, `import std.list as lists`. The first segment is `std`, a required module name, or a local folder. Circular imports are errors.
+- A **package** is one folder of `.jog` files (or the module root’s listed sources). It is the unit of namespacing and imports.
+- A **module** is a project: a tree of packages with one `jog.mod` at the root.
+- Import paths are dot-separated: `import std.list`, `import std.mem as m` (when aliases bind). Circular imports are errors.
 
-The entry point is `fn main()` in the **root package** (the folder that contains `jog.mod`). `*.test.jog` files belong to their folder’s package and load only under `jog test`.
+The entry point is `fn main()` in the **root package**. `*.test.jog` files load only under `jog test`.
 
 ## `jog.mod`
 
-Line-based; `#` comments. Minimal:
+Line-based; `#` comments. Prefer an explicit root on the Zig tip:
 
 ```
 module hello
+root main.jog
 ```
 
-v2 (every V1 file is valid v2):
+Richer example:
 
 ```
 module quickref
 version 0.1.0
 kind executable
-jog 0.0.1
+jog 0.2.0
+targets windows linux macos
+root main.jog
+source basics.jog
+source types.jog
 ```
 
 | Directive | Meaning |
 |---|---|
 | `module <name>` | Required, first; identifier, not `std` |
+| `root <file>` | Entry / primary source file |
+| `source <file-or-dir>` | Extra sources or a package directory tree |
 | `version <semver>` | Default `0.0.0` |
-| `kind executable` / `kind library` | Default executable; libraries have no `main` |
+| `kind executable` / `kind library` | Default executable |
 | `jog <semver>` | Minimum compiler version |
 | `require <module> <path-or-version>` | Dependency |
-| `export <package path>` | Library only; omit to export every package |
-| `link <lib>`, `link.windows <lib>` | C libraries |
+| `export <package path>` | Library only |
+| `link` / `libdir` (+ `.linux` / `.windows` / …) | Native libraries |
+| `targets <os>...` | `expect`/`actual` coverage |
+
+A bare `module name` with no `root`/`source` defaults to `{name}.jog`.
 
 The compiler never follows `require` paths by itself. Pass `--module name=dir` (or use [JogBuild](tools/)) for each dependency.
 
 ## `.jogz`
 
-A distributed library is a `.jogz`: a zip archive with a fixed layout carrying the module source (and later, optionally, objects). JogBuild unpacks archives into a cache and points `jog` at source folders. The compiler only reads folders.
+A distributed library is a `.jogz` zip of module source. JogBuild unpacks archives into a cache and points `jog` at source folders. The compiler only reads folders.
 
 ## Layout sketch
 
@@ -53,7 +63,5 @@ myapp/
   main.jog
   util.jog
   main.test.jog
-  net/
-    http.jog
   out/          # git-ignore
 ```

@@ -4,108 +4,61 @@ title: Getting started
 
 # Getting started
 
-Jog is at early preview (`jog 0.0.1`). The [JogCompiler](https://github.com/Jog-lang/JogCompiler) repository has two long-lived branches:
-
-| Branch | Binary | Role |
-|---|---|---|
-| `seed` | `jog` | C stage-0 compiler |
-| `develop` | `jogc` | Jog self-hosted compiler (needs an external `jog`) |
-
-Build `jog` first, then use that binary to build `jogc`.
+Jog’s product compiler is Zig-hosted **`jog`** (`jog` 0.2.x-v2) on [JogCompiler](https://github.com/Jog-lang/JogCompiler) branch **`develop`** (alias **`v2`**). Branches `seed` (C stage-0) and `develop-jogc` (pre-cut self-hosted Jog) are archives only.
 
 ## Prerequisites
 
-- Windows x86-64 or Linux x86-64 (aarch64 is not supported yet)
-- For `seed`: CMake, Ninja, and a C toolchain (**gcc** and **clang** on `PATH`)
-- For `develop`: a working `jog` binary (from `seed`) and a C linker toolchain for the emitted C
+- Linux x86-64 or Windows x86-64
+- [Zig](https://ziglang.org/) (see the compiler repo’s `build.zig.zon` for the pinned version)
+- For wasm: [emsdk](https://emscripten.org/) (`emcc` on `PATH`)
 
-## Build `jog` (`seed`)
-
-Clone JogCompiler and check out **`seed`**:
+## Build `jog`
 
 ```
 git clone https://github.com/Jog-lang/JogCompiler.git
 cd JogCompiler
-git checkout seed
-```
-
-**Windows**
-
-```
-cmake -S . -B build -G Ninja
-cmake --build build --target jog
-```
-
-The binary is `build/jog.exe`. Optionally run the full gate: `pwsh scripts/check.ps1` (prints `check: OK`).
-
-**Linux**
-
-```
-cmake -S . -B build-linux -G Ninja
-cmake --build build-linux --target jog
-```
-
-The binary is `build-linux/jog`. Optionally: `scripts/check.sh`.
-
-Put that binary on your `PATH`, or set `JOG` to its full path (JogBuild, JogLSP, and a `develop` checkout honor `JOG`). Std ships next to the compiler (`../std` from the binary’s folder), or set `JOG_ROOT` to the folder that contains `std/` and `runtime/`.
-
-Confirm:
-
-```
-jog version
-```
-
-You should see `jog 0.0.1`.
-
-## Build `jogc` (`develop`)
-
-Check out **`develop`** (same clone, or a second worktree). This branch has no CMake seed tree — stage 0 is always an external `jog`.
-
-```
 git checkout develop
-export JOG=/path/to/seed/build-linux/jog   # Windows: path to build/jog.exe
-"$JOG" build -o out/jogc
-./out/jogc version
+zig build
+./zig-out/bin/jog version
+./zig-out/bin/jog roots
 ```
 
-On Windows the output is typically `out/jogc.exe`. `JOG` must be set, or `jog` must be on `PATH`.
+Put `./zig-out/bin/jog` on your `PATH`, or set `JOG` to its full path. Std and core must be discoverable: either leave them next to the binary layout, or set `JOG_ROOT` to the checkout (the folder that contains `std/` and `core/`). Confirm with `jog roots`.
 
-Day-to-day work can use either binary. For shipping modules and for tools that spawn a compiler, point `JOG` at the one you intend to run; see [Toolchain](toolchain/) and [Tools](tools/).
+You should see a line like `jog 0.2.12-v2 (zig host, …)`.
 
 ## Hello module
-
-Create a folder with a manifest and a main file:
 
 `jog.mod`
 
 ```
 module hello
+root main.jog
 ```
 
 `main.jog`
 
 ```jog
-import std.io
-
 fn main() {
-    io.println("Hello from Jog!")
+    print("Hello from Jog!\n")
 }
 ```
 
 From that folder:
 
 ```
-jog check
-jog run
-jog build -o out/hello
+jog check .
+jog build . -o out/hello
+./out/hello
 ```
 
-`jog run` builds in debug mode and runs the program. `jog build` writes an executable under `out/` (or the `-o` path). Add `out/` to `.gitignore`. The same commands work with `jogc` once you have built it.
+Builtin `print` writes bytes (add your own newline). `import std.io` is not reliable on this tip yet — see [Std](std/). Add `out/` to `.gitignore`.
 
-You can also try the compiler’s own example after a seed build:
+Try a compiler example after the build:
 
 ```
-jog run examples/hello
+jog build examples/hello.jog -o out/hello
+./out/hello
 ```
 
 ## Tests
@@ -122,14 +75,14 @@ fn adds() with (t: testing.Testing) {
 ```
 
 ```
-jog test
+jog test .
 ```
 
-`jog check` / `jogc check` only typecheck and stop before lowering; confirm with `test` or `build` when you care about IR, C emit, and linking.
+`jog check` only typechecks and stops before lowering; confirm with `test` or `build` when you care about codegen and linking.
 
 ## Editor (optional)
 
-[JogLSP](https://github.com/Jog-lang/JogLSP) provides the VS Code / Cursor extension: highlighting plus diagnostics on open/change/save, document symbols, hover, go to definition, and completion. The language server is built against JogCompiler **`develop`** (`require jogc` / in-process frontend). You still set `JOG` (or `jog.compilerPath`) to a seed `jog` for tooling such as `jog-build`. Build and install steps are on [Tools](tools/).
+[JogLSP](https://github.com/Jog-lang/JogLSP) is a Zig language server for the v2 compiler: diagnostics via `jog check --diag=json`, symbols, hover, definition, completion. Set `JOG` (or `jog.compilerPath`) to your `jog` binary. Build steps: [Tools](tools/).
 
 ## Next
 

@@ -6,16 +6,16 @@ title: Jog
 
 **Jog** is a low-level language in the same place as C and Go. You work with functions, explicit layouts, and pointers. Memory is managed by hand — no GC. Code is built from structs, methods, and structural interfaces. On top of that sit coroutines, contexts (implicit parameters matched by type), and a few conveniences from Go, Kotlin, and TypeScript.
 
-Jog compiles to C (then clang or gcc), and can also target WebAssembly. Source files use `.jog`. The module manifest is `jog.mod`. Distributed libraries use `.jogz` archives.
+The product compiler is the Zig-hosted **`jog`** (`jog` 0.2.x-v2) on JogCompiler branch **`develop`** (tracking alias **`v2`**). Native builds go IR → asm → `zig cc`; WebAssembly uses `--target wasm32-emscripten` (IR → C → emcc). Source files use `.jog`. The module manifest is `jog.mod`. Distributed libraries use `.jogz` archives.
 
-This site is the public user wiki for an **early preview**. There are two compilers in [JogCompiler](https://github.com/Jog-lang/JogCompiler): the C seed **`jog`** (`jog 0.0.1`) on branch `seed`, and the Jog self-hosted **`jogc`** on branch `develop`. Expect rough edges; guides and examples describe what V1 actually compiles today. The editor is still [diagnostics-only](tools/).
+This site is the public user wiki for an **early preview**. Expect rough edges; guides describe what the Zig tip actually compiles. Older C seed (`seed`) and self-hosted Jog (`develop-jogc`) trees are archives only.
 
 ## Start here
 
-- [Getting started](getting-started/) — build `jog` from `seed`, then `jogc` from `develop`
+- [Getting started](getting-started/) — build `jog` with Zig from `develop`
 - [Tour](tour/) — short language walkthrough
-- [Language](language/) — feature pages with V1 status badges
-- [Toolchain](toolchain/) — shared `jog` / `jogc` commands
+- [Language](language/) — feature pages (gaps called out where still open)
+- [Toolchain](toolchain/) — `jog` commands
 - [Examples](examples/) — curated programs
 - [Tools](tools/) — JogBuild and JogLSP
 - [Libraries](libraries/) — JogSDL and JogEngine
@@ -24,27 +24,29 @@ This site is the public user wiki for an **early preview**. There are two compil
 ## Taste
 
 ```jog
-struct Player {
-    Entity
-    name: str
-    hp: i32
+struct Point {
+    x: i64
+    y: i64
 }
 
-fn *Player.hit(dmg: i32) {
-    self.hp -= dmg
+fn Point.len2(): i64 = self.x * self.x + self.y * self.y
+
+fn *Point.move(dx: i64, dy: i64) {
+    self.x += dx
+    self.y += dy
 }
 
-enum Event {
-    Hit(dmg: i32)
-    Heal(hp: i32)
-    Quit
+enum Color {
+    Red
+    Green
+    Blue
 }
 
-fn *Player.apply(e: Event) {
-    when e {
-        Hit(dmg) -> self.hit(dmg)
-        Heal(hp) -> self.hp += hp
-        Quit -> {}
+fn colorCode(c: Color): i64 {
+    return when c {
+        Red -> 1
+        Green -> 2
+        Blue -> 3
     }
 }
 ```

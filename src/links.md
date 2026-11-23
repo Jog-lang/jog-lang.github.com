@@ -19,10 +19,10 @@ Public Jog repositories under [github.com/Jog-lang](https://github.com/Jog-lang)
 
 | Branch | What it is |
 |---|---|
-| [`seed`](https://github.com/Jog-lang/JogCompiler/tree/seed) | C stage-0 compiler `jog` only |
-| [`develop`](https://github.com/Jog-lang/JogCompiler/tree/develop) | Jog self-hosted compiler `jogc` only |
-| [`p3/jogc`](https://github.com/Jog-lang/JogCompiler/tree/p3/jogc) | Bootstrap record (both trees at the self-host landing) |
-| [`c-seed-compiler`](https://github.com/Jog-lang/JogCompiler/tree/c-seed-compiler) | Older public C seed; history only |
+| [`develop`](https://github.com/Jog-lang/JogCompiler/tree/develop) | **Product** — Zig-hosted `jog` tip |
+| [`v2`](https://github.com/Jog-lang/JogCompiler/tree/v2) | Tracking alias of the Zig tip |
+| [`seed`](https://github.com/Jog-lang/JogCompiler/tree/seed) | Archive — C stage-0 `jog` |
+| [`develop-jogc`](https://github.com/Jog-lang/JogCompiler/tree/develop-jogc) | Archive — pre-cut self-hosted Jog `jogc` |
 
 Build steps: [Getting started](getting-started/). Commands: [Toolchain](toolchain/).
 

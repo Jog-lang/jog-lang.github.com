@@ -4,78 +4,49 @@ title: Toolchain
 
 # Toolchain
 
-JogCompiler ships two compilers with the **same command surface**:
+JogCompiler’s product binary is Zig-hosted **`jog`** on branch **`develop`** (`v2` alias). It typechecks, lowers to IR, and either emits native asm (linked with `zig cc`) or C for Emscripten.
 
-| Binary | Branch | Built from |
-|---|---|---|
-| `jog` | `seed` | C sources (CMake) |
-| `jogc` | `develop` | Jog sources (`jog build` with an external `jog`) |
-
-Both report `jog 0.0.1` style versioning for the preview. They read a module, typecheck, lower to IR, emit C, and link with clang or gcc. WebAssembly uses `--target wasm32` with `wasm-ld` (and Node for `run`).
-
-For day-to-day work and for tools (JogBuild, JogLSP), pick one binary and point `JOG` at it — that is the compiler those tools will run. The seed `jog` remains the reference for V1; `jogc` is the self-hosted path and shares the commands below.
+Archives: `seed` (C `jog`), `develop-jogc` (self-hosted `jogc`). Same command *names* where they overlap, but day-to-day docs target the Zig tip only.
 
 ## Commands
 
 ```
-usage: jog <command> [arguments]
+usage: jog <command> [args]
 ```
-
-The same table applies to `jogc`:
 
 | Command | Does |
 |---|---|
-| `build` | Compile to an executable |
-| `run` | Debug build, then run (`--` passes args to the program) |
-| `test` | Build with `*.test.jog`, run `@test` functions |
-| `check` | Load, resolve, typecheck — **stops before lowering** |
-| `emit-c` | Print generated C |
-| `emit-ir` | Print IR |
-| `parse` / `lex` | Debug one file |
 | `version` / `help` | Version string / usage |
+| `roots` | Print std/core discovery |
+| `parse` / `symbols` | Debug / LSP symbols |
+| `ide …` | JSON IDE queries (JogLSP) |
+| `check` | Load and typecheck — **stops before lowering** |
+| `test` | Build+run `@test` in root-module `*.test.jog` |
+| `build` | Native or `--target wasm32-emscripten` executable |
+| `deps` | Source paths or `--module` flags |
 
 Common flags:
 
-- `[package]` — start path (file or folder); walks up to `jog.mod`. Default: current directory.
-- `--module name=dir` — map a `require`d module to a source folder (repeatable).
-- `build`: `-o file`, `--release`, `--release-fast`, `--keep-c`, `--target wasm32`, `--comptime-steps N`
-- `check`: `--diag=text|json`
-
-## Outputs
-
-- Executable: `out/<module name>` (`.exe` on Windows, `.wasm` for wasm), or `-o`.
-- Generated C: `out/<module>.c` (deleted after link unless `--keep-c`).
-- Ignore `out/` in git.
-
-## Build modes
-
-| Mode | Flag | Bounds / `!!` | Overflow |
-|---|---|---|---|
-| debug | (default) | on | on |
-| release | `--release` | on | on |
-| release-fast | `--release-fast` | off | on |
-
-`run` and `test` always use debug.
+- Path: `.jog` file, directory with `jog.mod`, or `jog.mod`
+- `--module name=dir` — map a `require`d module (repeatable)
+- `build`: `-o OUT`, `--keep-asm`, `--keep-c`, `--target wasm32-emscripten`, `--libdir` / `-L`
+- `check`: `--diag=json`, `--test`
 
 ## Environment
 
 | Variable | Meaning |
 |---|---|
-| `JOG_CC` | C compiler instead of searching clang then gcc |
-| `JOG_ROOT` | Folder containing `std/` and `runtime/` |
-| `JOG` | Path to the compiler binary for JogBuild / JogLSP / building `jogc` (not read by `jog` itself when you invoke it directly) |
+| `JOG_ROOT` | Folder containing `std/` and `core/` |
+| `JOG` | Compiler path for JogBuild / JogLSP |
 | `JOG_CACHE` | JogBuild module cache |
+| `EMCC` | Emscripten override |
 
 ## Diagnostics
 
 Text on stderr: `file:line:column: severity: message`.
 
-`jog check --diag=json` (or `jogc check --diag=json`) prints JSON Lines on stdout with `file`, `line`, `column` (1-based bytes), `severity`, `message`.
-
-## Project layout
-
-See [Modules](modules/). With dependencies, use [JogBuild](tools/) or pass `--module` yourself.
+`jog check --diag=json` prints JSON Lines on stdout with `file`, `line`, `column` (1-based bytes), `severity`, `message`.
 
 ## Building from source
 
-See [Getting started](getting-started/): check out `seed` for `jog`, then `develop` with `JOG` set for `jogc`. Repository and branch links: [Links](links/).
+See [Getting started](getting-started/). Branches: [Links](links/).
