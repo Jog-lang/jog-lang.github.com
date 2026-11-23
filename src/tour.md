@@ -4,19 +4,19 @@ title: Tour
 
 # Tour
 
-A short walkthrough of what **jog 0.0.1** accepts today. For design depth and status badges, see [Language](language/).
+A short walkthrough of what **jog 0.2.x-v2** accepts today. For design depth and open gaps, see [Language](language/).
 
 ## At a glance
 
-- Low-level, C-like semantics: manual memory, no GC, no exceptions. Compiles to C, then clang or gcc.
+- Low-level, C-like semantics: manual memory, no GC, no exceptions. Native: IR → asm → `zig cc`.
 - Types after names. Declarations start with a keyword. Everything is **public by default**; `private` narrows it.
 - Numbers never convert implicitly — every conversion is `as`. Integer overflow panics.
-- Allocation goes through an `Allocator` passed as a **context** (an implicit parameter matched by type).
-- Errors are values: a fallible function returns `error?` as its last result.
+- Allocation goes through an `Allocator` passed as a **context**.
+- Prefer builtin `print` for hello-world; std packages that import cleanly include `mem`, `list`, `testing`, and others listed on [Std](std/).
 
 ## Lexical basics
 
-Files are UTF-8 `.jog`. Comments: `//` and nested `/* */`. A newline ends a statement when the last token can end an expression; a line ending in an operator or `,` continues. Lines starting with `.`, `?.`, or `?:` continue the previous line.
+Files are UTF-8 `.jog`. Comments: `//` and nested `/* */`. A newline ends a statement when the last token can end an expression; a line ending in an operator or `,` continues.
 
 ```jog
 fn longSum(a: i64, b: i64, c: i64): i64 {
@@ -41,6 +41,12 @@ fn add(a: i32, b: i32): i32 {
 
 fn square(x: i64): i64 = x * x
 
+fn sign(x: i64): i64 {
+    if x > 0 { return 1 }
+    if x < 0 { return -1 }
+    return 0
+}
+
 fn sumTo(n: i64): i64 {
     var total: i64 = 0
     for i in 0..n {
@@ -50,29 +56,31 @@ fn sumTo(n: i64): i64 {
 }
 ```
 
-`for` is the only loop: `for cond { }`, `for i in a..b { }`, `for i, x in xs { }`. `if` and `when` are expressions. Enums use exhaustive `when` (or `else`) and `is` for variant tests:
+`for` is the only loop: `for cond { }`, `for i in a..b { }`. `if` is a **statement** on this tip (not an expression). Plain enums use exhaustive `when`:
 
 ```jog
-enum Event {
-    Hit(dmg: i32)
-    Quit
+enum Color {
+    Red
+    Green
 }
 
-fn apply(e: Event): i32 {
-    return when e {
-        Hit(dmg) -> dmg
-        Quit -> 0
+fn code(c: Color): i64 {
+    return when c {
+        Red -> 1
+        Green -> 2
     }
 }
 ```
 
+Enum payloads, lambdas, and `if` expressions are specified but **not yet** on v2.
+
 ## Packages
 
-A **folder is a package**. Files in the same folder see each other without imports. `import std.io` and `import net.http as h` are per-file. The entry point is `fn main()` in the root package (the folder with `jog.mod`). `*.test.jog` files compile only under `jog test`.
+A **folder is a package**. Files listed in `jog.mod` (`root` / `source`) share declarations. `import std.mem` is per-file. The entry point is `fn main()` in the root package. `*.test.jog` files compile under `jog test`.
 
 ## Types in brief
 
-Integers (`i8`…`i64`, `u8`…`u64`, `isize`/`usize`), floats, `bool`, `rune`, `str` (read-only byte view), `bytes`, arrays `[N]T`, slices `[]T`, pointers `*T` / `*T?`, tuples, distinct types (`type Celsius: f64`), structs, enums, and structural interfaces.
+Integers, floats, `bool`, `str` (byte view), arrays `[N]T`, slices `[]T`, pointers `*T` / `*T?`, tuples, distinct types, structs, plain enums, structural interfaces.
 
 ```jog
 fn widen(a: i32): i64 = a as i64
@@ -85,57 +93,46 @@ struct Point {
 fn Point.len2(): i64 = self.x * self.x + self.y * self.y
 ```
 
-## Errors and contexts
+## Contexts
 
 ```jog
-fn lookup(key: str): (i64, error?) {
-    if key == "answer" {
-        return 42, null
-    }
-    return 0, ErrNotFound
-}
+import std.mem
 
 fn copyText(s: str): str with (a: mem.Allocator) {
     val (raw, err) = a.alloc(s.len, align(u8))
     if err != null {
         panic("out of memory")
     }
-    // ... copy bytes ...
+    for i in 0 as usize..s.len {
+        raw.ptr[i] = s.ptr[i]
+    }
     return raw
 }
 ```
 
-Provide a context with `with (mem.heap()) { ... }`, `context a = mem.heap()`, or `call(...) with (value)`. `main` starts with runtime defaults, so it can allocate without declaring contexts.
+Provide a context with `with (mem.heap()) { ... }` or `call(...) with (value)`.
 
-## Generics, lambdas, coroutines
+## Generics and coroutines
 
 ```jog
+import std.cmp
+
 fn maxOf<T: cmp.Ordered>(a: T, b: T): T {
     if a > b { return a }
     return b
 }
-
-fn apply(x: i64, f: (i64) -> i64): i64 = f(x)
-
-fn answer(): i64 {
-    var v: i64 = 0
-    scope {
-        val task = go with (mem.heap()) { 40 + 2 }
-        v = task.join()
-    }
-    return v
-}
 ```
+
+Coroutines on v2 use `go(fn, arg)`, `yield()`, and `coro_drain()` (see compiler `examples/coro_yield.jog`). The older `scope` / `go { }` / `Chan` form is not yet on this tip.
 
 ## Manifest
 
-Minimal `jog.mod`:
-
 ```
 module hello
+root main.jog
 ```
 
-Optional v2 lines include `version`, `kind executable|library`, `jog 0.0.1`, `require`, `export`, and `link`. See [Modules](modules/).
+Optional lines: `version`, `kind`, `jog 0.2.0`, `require`, `export`, `link`, directory `source`. See [Modules](modules/).
 
 ## Next
 
