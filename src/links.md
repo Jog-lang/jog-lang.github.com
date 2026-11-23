@@ -13,6 +13,8 @@ Public Jog repositories under [github.com/Jog-lang](https://github.com/Jog-lang)
 | Build tool | [https://github.com/Jog-lang/JogBuild](https://github.com/Jog-lang/JogBuild) |
 | Language server | [https://github.com/Jog-lang/JogLSP](https://github.com/Jog-lang/JogLSP) |
 
+- [Libraries](libraries/) — JogSDL and JogEngine (SDL3 bindings and the game engine)
+
 ## JogCompiler branches
 
 | Branch | What it is |

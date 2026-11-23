@@ -18,6 +18,7 @@ This site is the public user wiki for an **early preview**. There are two compil
 - [Toolchain](toolchain/) — shared `jog` / `jogc` commands
 - [Examples](examples/) — curated programs
 - [Tools](tools/) — JogBuild and JogLSP
+- [Libraries](libraries/) — JogSDL and JogEngine
 - [Links](links/) — public repositories and branches
 
 ## Taste
